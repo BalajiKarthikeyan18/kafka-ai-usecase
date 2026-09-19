@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from confluent_kafka.admin import AdminClient
+from confluent_kafka.admin import AdminClient, NewTopic
 
 load_dotenv()
 
@@ -14,11 +14,20 @@ config = {
 
 admin_client = AdminClient(config)
 
-metadata = admin_client.list_topics(timeout=10)
+topic_name = "mcp-test-topic"
 
-print("Connected to Confluent Cloud")
-print(f"Cluster: {metadata.cluster_id}")
-print("Existing topics:")
+topic = NewTopic(
+    topic_name,
+    num_partitions=3,
+    replication_factor=3
+)
 
-for topic in metadata.topics:
-    print(f" - {topic}")
+print(f"Creating topic: {topic_name}")
+
+future = admin_client.create_topics([topic])[topic_name]
+
+try:
+    future.result()
+    print(f"Topic created successfully: {topic_name}")
+except Exception as e:
+    print(f"Failed to create topic: {e}")
