@@ -398,21 +398,29 @@ UI
 
 ![](outputs/image.png)
 
-![alt text](image-0.png)
+Query 1
+![](image-0.png)
 
-![alt text](image-1.png)
+Query 2
+![](image-1.png)
 
-![alt text](image-2.png)
+Query 3
+![](image-2.png)
 
-![alt text](image-3.png)
+Query 4
+![](image-3.png)
 
-![alt text](image-4.png)
+Query 5
+![](image-4.png)
 
-![alt text](image-5.png)
+Query 6
+![](image-5.png)
 
-![alt text](image-6.png)
+Query 7
+![](image-6.png)
 
-![alt text](image-7.png)
+Query 8
+![](image-7.png)
 
 ---
 
@@ -429,8 +437,8 @@ Confluence knowledge base.
 
 This reduces the risk of the model inventing information that isn't present in the documentation.
 
-
-![alt text](image-8.png)
+Query 
+![](image-8.png)
 
 ---
 
