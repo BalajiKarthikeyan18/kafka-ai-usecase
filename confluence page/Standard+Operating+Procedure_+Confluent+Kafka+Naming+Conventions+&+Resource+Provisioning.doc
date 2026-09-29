@@ -1,0 +1,736 @@
+Date: Tue, 29 Sep 2026 05:10:16 +0000 (UTC)
+Message-ID: <1628364343.47.1790658616986@40e91470e9d8>
+Subject: Exported From Confluence
+MIME-Version: 1.0
+Content-Type: multipart/related; 
+	boundary="----=_Part_46_1921261331.1790658616986"
+
+------=_Part_46_1921261331.1790658616986
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Content-Location: file:///C:/exported.html
+
+<html xmlns:o=3D'urn:schemas-microsoft-com:office:office'
+      xmlns:w=3D'urn:schemas-microsoft-com:office:word'
+      xmlns:v=3D'urn:schemas-microsoft-com:vml'
+      xmlns=3D'urn:w3-org-ns:HTML'>
+<head>
+    <meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dutf-8=
+">
+    <title>Standard Operating Procedure: Confluent Kafka Naming Conventions=
+ &amp; Resource Provisioning</title>
+    <!--[if gte mso 9]>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:TargetScreenSize>1024x640</o:TargetScreenSize>
+            <o:PixelsPerInch>72</o:PixelsPerInch>
+            <o:AllowPNG/>
+        </o:OfficeDocumentSettings>
+        <w:WordDocument>
+            <w:View>Print</w:View>
+            <w:Zoom>90</w:Zoom>
+            <w:DoNotOptimizeForBrowser/>
+        </w:WordDocument>
+    </xml>
+    <![endif]-->
+    <style>
+                <!--
+        @page Section1 {
+            size: 8.5in 11.0in;
+            margin: 1.0in;
+            mso-header-margin: .5in;
+            mso-footer-margin: .5in;
+            mso-paper-source: 0;
+        }
+
+        table {
+            border: solid 1px;
+            border-collapse: collapse;
+        }
+
+        table td, table th {
+            border: solid 1px;
+            padding: 5px;
+        }
+
+        td {
+            page-break-inside: avoid;
+        }
+
+        tr {
+            page-break-after: avoid;
+        }
+
+        div.Section1 {
+            page: Section1;
+        }
+
+        /* Confluence print stylesheet. Common to all themes for print medi=
+a */
+/* Full of !important until we improve batching for print CSS */
+
+@media print {
+    #main {
+        padding-bottom: 1em !important; /* The default padding of 6em is to=
+o much for printouts */
+    }
+
+    body {
+        font: var(--ds-font-body-small, Arial, Helvetica, FreeSans, sans-se=
+rif);
+    }
+
+    body, #full-height-container, #main, #page, #content, .has-personal-sid=
+ebar #content {
+        background: var(--ds-surface, #fff) !important;
+        color: var(--ds-text, #000) !important;
+        border: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+    }
+
+    a, a:link, a:visited, a:focus, a:hover, a:active {
+        color: var(--ds-text, #000);
+    }
+
+    #content h1,
+    #content h2,
+    #content h3,
+    #content h4,
+    #content h5,
+    #content h6 {
+        page-break-after: avoid;
+    }
+
+    pre {
+        font: var(--ds-font-code, Monaco, "Courier New", monospace);
+    }
+
+    #header,
+    .aui-header-inner,
+    #navigation,
+    #sidebar,
+    .sidebar,
+    #personal-info-sidebar,
+    .ia-fixed-sidebar,
+    .page-actions,
+    .navmenu,
+    .ajs-menu-bar,
+    .noprint,
+    .inline-control-link,
+    .inline-control-link a,
+    a.show-labels-editor,
+    .global-comment-actions,
+    .comment-actions,
+    .quick-comment-container,
+    #addcomment {
+        display: none !important;
+    }
+
+    /* CONF-28544 cannot print multiple pages in IE */
+    #splitter-content {
+        position: relative !important;
+    }
+
+    .comment .date::before {
+        content: none !important; /* remove middot for print view */
+    }
+
+    h1.pagetitle img {
+        height: auto;
+        width: auto;
+    }
+
+    .print-only {
+        display: block;
+    }
+
+    #footer {
+        position: relative !important; /* CONF-17506 Place the footer at en=
+d of the content */
+        margin: 0;
+        padding: 0;
+        background: none;
+        clear: both;
+    }
+
+    #poweredby {
+        border-top: none;
+        background: none;
+    }
+
+    #poweredby li.print-only {
+        display: list-item;
+        font-style: italic;
+    }
+
+    #poweredby li.noprint {
+        display: none;
+    }
+
+    /* no width controls in print */
+    .wiki-content .table-wrap,
+    .wiki-content p,
+    .panel .codeContent,
+    .panel .codeContent pre,
+    .image-wrap {
+        overflow: visible !important;
+    }
+
+    /* TODO - should this work? */
+    #children-section,
+    #comments-section .comment,
+    #comments-section .comment .comment-body,
+    #comments-section .comment .comment-content,
+    #comments-section .comment p {
+        page-break-inside: avoid;
+    }
+
+    #page-children a {
+        text-decoration: none;
+    }
+
+    /**
+     hide twixies
+
+     the specificity here is a hack because print styles
+     are getting loaded before the base styles. */
+    #comments-section.pageSection .section-header,
+    #comments-section.pageSection .section-title,
+    #children-section.pageSection .section-header,
+    #children-section.pageSection .section-title,
+    .children-show-hide {
+        padding-left: 0;
+        margin-left: 0;
+    }
+
+    .children-show-hide.icon {
+        display: none;
+    }
+
+    /* personal sidebar */
+    .has-personal-sidebar #content {
+        margin-right: 0px;
+    }
+
+    .has-personal-sidebar #content .pageSection {
+        margin-right: 0px;
+    }
+
+    .no-print, .no-print * {
+        display: none !important;
+    }
+}
+-->
+    </style>
+</head>
+<body>
+    <h1>Standard Operating Procedure: Confluent Kafka Naming Conventions &a=
+mp; Resource Provisioning</h1>
+    <div class=3D"Section1">
+        <h2 local-id=3D"41fb56d5e83c" id=3D"StandardOperatingProcedure:Conf=
+luentKafkaNamingConventions&amp;ResourceProvisioning-1.DocumentControl&amp;=
+Contributors">1. Document Control &amp; Contributors</h2>
+<div class=3D"table-wrap">
+<table data-table-width=3D"760" data-layout=3D"default" data-local-id=3D"3b=
+75689d-b2f0-496a-947b-4d4cd642179c" class=3D"confluenceTable">
+<tbody>
+<tr data-local-id=3D"9ed631b5-0f9d-4c7a-8b09-ed044a0c0bef">
+<td data-local-id=3D"4f30cb82-900b-4b2b-bdc4-d505d252e88d" class=3D"conflue=
+nceTd">
+<p local-id=3D"398bf2a2f2a8"><strong>Role</strong></p></td>
+<td data-local-id=3D"33b5a7ee-59b9-4a4a-a1b7-3129ae8cb43d" class=3D"conflue=
+nceTd">
+<p local-id=3D"c0f43617d613"><strong>Name</strong></p></td>
+<td data-local-id=3D"5eeee31a-b528-4f75-8aab-754ac473ba09" class=3D"conflue=
+nceTd">
+<p local-id=3D"d27718e9d08d"><strong>Team / Department</strong></p></td>
+<td data-local-id=3D"3893aac0-66e0-418a-8ea1-e4ef78c99c72" class=3D"conflue=
+nceTd">
+<p local-id=3D"76e402471ef7"><strong>Contact / Email</strong></p></td>
+</tr>
+<tr data-local-id=3D"0bcf6ea4-6a28-4c7f-b868-d3d6d9850d25">
+<td data-local-id=3D"ff30d1fc-9929-4175-8641-f7ff9fb79d09" class=3D"conflue=
+nceTd">
+<p local-id=3D"5e091b3b6d66"><strong>Primary Author / Lead</strong></p></td=
+>
+<td data-local-id=3D"dd3402f4-d1bd-46c3-bfcd-f75a53600224" class=3D"conflue=
+nceTd">
+<p local-id=3D"70962320d43e">Balaji K</p></td>
+<td data-local-id=3D"bd355293-a389-4e8b-a0b4-0ad65af600d2" class=3D"conflue=
+nceTd">
+<p local-id=3D"df2e93688f18">Data Engineering &amp; Streaming Platform</p><=
+/td>
+<td data-local-id=3D"11ecef7f-fdc9-4bbc-b8e0-a2c2232b270f" class=3D"conflue=
+nceTd">
+<p local-id=3D"544251e30670"><code>balaji.k@company.com</code></p></td>
+</tr>
+<tr data-local-id=3D"9056d063-50ac-4851-b082-c365ad61479d">
+<td data-local-id=3D"334b18d8-9d29-485f-8b99-a4df35ef0aab" class=3D"conflue=
+nceTd">
+<p local-id=3D"1cf96ed5da7e"><strong>Peer Reviewer</strong></p></td>
+<td data-local-id=3D"85e11717-6cea-438e-9cfe-17823e4f87eb" class=3D"conflue=
+nceTd">
+<p local-id=3D"260e08a63e7a">Sukant Sharma</p></td>
+<td data-local-id=3D"316b45de-0639-4d38-86f7-f6443072feb5" class=3D"conflue=
+nceTd">
+<p local-id=3D"bfaad5d3a630">Cloud Infrastructure / DevOps</p></td>
+<td data-local-id=3D"a2bd3432-7b40-4711-bc61-5092507ea20c" class=3D"conflue=
+nceTd">
+<p local-id=3D"4e2bfe295894"><code>sukant.sharma@company.com</code></p></td=
+>
+</tr>
+<tr data-local-id=3D"1cdf6bba-2034-4bf9-9521-ba966604303a">
+<td data-local-id=3D"2369ed96-0dcd-4070-be74-27502ff6e3a0" class=3D"conflue=
+nceTd">
+<p local-id=3D"0bbab3c8fe9a"><strong>Platform Administrator</strong></p></t=
+d>
+<td data-local-id=3D"6daeaedf-1e46-4f45-ba47-5ac543f2a309" class=3D"conflue=
+nceTd">
+<p local-id=3D"bcb6c6048944">Ananya Roy</p></td>
+<td data-local-id=3D"fe055018-6272-434a-889d-bbd8962bd5f8" class=3D"conflue=
+nceTd">
+<p local-id=3D"2a02d2392aef">Streaming Architecture</p></td>
+<td data-local-id=3D"d151f51c-f8b8-4ae0-8252-e3cdf53c42c6" class=3D"conflue=
+nceTd">
+<p local-id=3D"7c198e14c09b"><code>ananya.roy@company.com</code></p></td>
+</tr>
+<tr data-local-id=3D"425f32b2-cba4-4926-b720-fd8d7cb525f4">
+<td data-local-id=3D"a95e8ea1-331a-4cf2-8920-1df2bb348bf5" class=3D"conflue=
+nceTd">
+<p local-id=3D"bfe20ef72456"><strong>Quality Assurance Lead</strong></p></t=
+d>
+<td data-local-id=3D"3c088b5e-02d3-4f65-a78b-0f0fd451a0db" class=3D"conflue=
+nceTd">
+<p local-id=3D"5574a77efda6">Rohan Mehta</p></td>
+<td data-local-id=3D"b37dd840-e159-4aad-8cd4-77376023c6f9" class=3D"conflue=
+nceTd">
+<p local-id=3D"a0cc6066e7e0">Enterprise Integration</p></td>
+<td data-local-id=3D"8626c9b2-d39e-4625-a7b4-af00e552bb19" class=3D"conflue=
+nceTd">
+<p local-id=3D"dc17077fb497"><code>rohan.mehta@company.com</code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 local-id=3D"02b87c6c5673" id=3D"StandardOperatingProcedure:ConfluentKaf=
+kaNamingConventions&amp;ResourceProvisioning-2.Environment&amp;UnitArchitec=
+ture">2. Environment &amp; Unit Architecture</h2>
+<p local-id=3D"ab9b1332a9e3">To maintain isolation, monitoring, and RBAC co=
+mpliance, all Kafka resources must be bound to standardized naming formats =
+according to the environment and target application domain.</p>
+<div class=3D"table-wrap">
+<table data-table-width=3D"760" data-layout=3D"default" data-local-id=3D"03=
+84a7c5-6ad3-407a-a16b-40654a2d5a95" class=3D"confluenceTable">
+<tbody>
+<tr data-local-id=3D"e817ab57-65b8-4c65-817b-d7ad57f43061">
+<td data-local-id=3D"e47c2545-c234-4a2f-8b3a-05bea7d6f268" class=3D"conflue=
+nceTd">
+<p local-id=3D"46b330b7fcb1"><strong>Environment</strong></p></td>
+<td data-local-id=3D"4f653644-d52f-483a-9bad-a3ca77ff2111" class=3D"conflue=
+nceTd">
+<p local-id=3D"74f91a9c2180"><strong>Prefix / Code</strong></p></td>
+<td data-local-id=3D"3e147882-7694-4383-89b4-7f5e7a3bd0a2" class=3D"conflue=
+nceTd">
+<p local-id=3D"1a12abc8b5b3"><strong>Purpose</strong></p></td>
+</tr>
+<tr data-local-id=3D"3fdbb3c5-3624-453a-b6c9-334268381052">
+<td data-local-id=3D"acd9554b-3b1d-4b08-8a4c-a1c56526dc32" class=3D"conflue=
+nceTd">
+<p local-id=3D"133749f5d472"><strong>Development</strong></p></td>
+<td data-local-id=3D"a0f79cfa-7452-484a-9b45-3e2fc6106c52" class=3D"conflue=
+nceTd">
+<p local-id=3D"a64b432c6515"><code>dev</code></p></td>
+<td data-local-id=3D"a05dadef-d0d2-498e-8f58-d8e824b384dd" class=3D"conflue=
+nceTd">
+<p local-id=3D"3de5e2ced5cf">Sandbox testing and unit integration.</p></td>
+</tr>
+<tr data-local-id=3D"11f34d6a-33fe-448b-98f7-9e771ccef1eb">
+<td data-local-id=3D"75238766-5fef-4910-9181-4d0f30d40bea" class=3D"conflue=
+nceTd">
+<p local-id=3D"56718349534b"><strong>User Acceptance Testing</strong></p></=
+td>
+<td data-local-id=3D"f6701101-a803-4b91-beb7-3b9f3596adf8" class=3D"conflue=
+nceTd">
+<p local-id=3D"3ce97ca7d41e"><code>uat</code></p></td>
+<td data-local-id=3D"be2100dd-cd13-41ea-998d-6f0ae7d88b1b" class=3D"conflue=
+nceTd">
+<p local-id=3D"a9e5e71f6784">Staging, QA, and integration testing.</p></td>
+</tr>
+<tr data-local-id=3D"436356c8-37de-441d-8d20-2fe8cf6336ec">
+<td data-local-id=3D"557d943d-555a-4f02-a25c-f847ee76838c" class=3D"conflue=
+nceTd">
+<p local-id=3D"37f831e11e0a"><strong>Production</strong></p></td>
+<td data-local-id=3D"def6d32b-697b-4397-a015-d264662e340d" class=3D"conflue=
+nceTd">
+<p local-id=3D"430227f00ac3"><code>prd</code></p></td>
+<td data-local-id=3D"5b95a099-d509-43aa-8f9a-fd61230f19b6" class=3D"conflue=
+nceTd">
+<p local-id=3D"78bddd722b13">High-availability production workloads.</p></t=
+d>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 local-id=3D"92b0f59ac24c" id=3D"StandardOperatingProcedure:ConfluentKaf=
+kaNamingConventions&amp;ResourceProvisioning-3.NamingConventions">3. Naming=
+ Conventions</h2>
+<h3 local-id=3D"40c0c4e6cdee" id=3D"StandardOperatingProcedure:ConfluentKaf=
+kaNamingConventions&amp;ResourceProvisioning-3.1Topics">3.1 Topics</h3>
+<p local-id=3D"ea0acd509caa">All topic names must use lowercase letters, nu=
+mbers, and hyphens (<code>-</code>). Use dots (<code>.</code>) strictly as =
+logical level separators. <strong>Do not use underscores (</strong><code>_<=
+/code><strong>).</strong></p>
+<p local-id=3D"20cd65a4cbea"><strong>Format:</strong></p>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence">&lt;env=
+&gt;.&lt;domain&gt;.&lt;entity&gt;.&lt;event-type&gt;.&lt;version&gt;
+</pre>
+</div>
+</div>
+<p local-id=3D"e1e8100c7ea3"><strong>Components:</strong></p>
+<ul local-id=3D"2bed2fec-1be6-4631-a6d9-13f5352a7a35">
+<li local-id=3D"f41bacff-bc3a-40a2-94bb-21c9a005d4b2">
+<p local-id=3D"d8b44916def1"><code>env</code>: <code>dev</code>, <code>uat<=
+/code>, or <code>prd</code></p></li>
+<li local-id=3D"23a88e95-2999-43cd-9df5-dff22c3cf342">
+<p local-id=3D"9af8a0653f0d"><code>domain</code>: Bounded context or busine=
+ss unit (e.g., <code>inventory</code>, <code>payments</code>, <code>telemet=
+ry</code>, <code>orders</code>)</p></li>
+<li local-id=3D"9591b468-d3e0-4972-8d59-4677479419cc">
+<p local-id=3D"b656b8cf9c47"><code>entity</code>: Core business object (e.g=
+., <code>invoice</code>, <code>shipment</code>, <code>user</code>)</p></li>
+<li local-id=3D"486766af-77fc-4b91-a6b3-0ff692d7a305">
+<p local-id=3D"b0182ed739f6"><code>event-type</code>: State change, intent,=
+ or system signal (e.g., <code>created</code>, <code>updated</code>, <code>=
+requested</code>, <code>raw</code>)</p></li>
+<li local-id=3D"799c1b46-bc44-421a-a9f7-b58f0afe5ddc">
+<p local-id=3D"bad8a9083b1c"><code>version</code>: Schema version string pr=
+efixed with <code>v</code> (e.g., <code>v1</code>, <code>v2</code>)</p></li=
+>
+</ul>
+<p local-id=3D"fcc586eb35b2"><strong>Examples:</strong></p>
+<ul local-id=3D"ffb9e331-85d7-4a58-96b7-41eb824f0121">
+<li local-id=3D"468f4d2f-6e12-4ac3-8b64-cf7352eba1e5">
+<p local-id=3D"e0e73ac450b2"><code>prd.payments.invoice.created.v1</code></=
+p></li>
+<li local-id=3D"5c42a9f4-5c7d-4e02-8d07-8545a268f14e">
+<p local-id=3D"93d0b6966c30"><code>dev.inventory.shipment.updated.v1</code>=
+</p></li>
+<li local-id=3D"6ba07728-5276-4aa3-b0b6-978cbaa9fdd0">
+<p local-id=3D"a1520c6f4bc1"><code>uat.telemetry.sensor.raw.v2</code></p></=
+li>
+</ul>
+<h3 local-id=3D"0b7ed1a275b1" id=3D"StandardOperatingProcedure:ConfluentKaf=
+kaNamingConventions&amp;ResourceProvisioning-3.2ConsumerGroups">3.2 Consume=
+r Groups</h3>
+<p local-id=3D"35aba51a7cb9">Consumer Group IDs must reflect the consuming =
+application, domain, and target processing logic to allow easy tracking in =
+Confluent Control Center.</p>
+<p local-id=3D"dc265cbbf564"><strong>Format:</strong></p>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence">cg-&lt;=
+env&gt;-&lt;consuming-app&gt;-&lt;domain&gt;-&lt;purpose&gt;
+</pre>
+</div>
+</div>
+<p local-id=3D"32f36104a4a1"><strong>Examples:</strong></p>
+<ul local-id=3D"adf14d2b-2940-48a0-836a-e6fd4afd0b8d">
+<li local-id=3D"4b6c4dcd-ac1e-4441-9e3f-8c1934fe2cb4">
+<p local-id=3D"be6068d49b22"><code>cg-prd-billing-service-payments-settleme=
+nt</code></p></li>
+<li local-id=3D"cfe0376e-cb11-455c-8c67-e35400099572">
+<p local-id=3D"a08ba7712102"><code>cg-dev-analytics-engine-inventory-indexe=
+r</code></p></li>
+</ul>
+<h3 local-id=3D"5a7c956eb07b" id=3D"StandardOperatingProcedure:ConfluentKaf=
+kaNamingConventions&amp;ResourceProvisioning-3.3SchemaRegistrySubjectNames"=
+>3.3 Schema Registry Subject Names</h3>
+<p local-id=3D"d40a702aea8f">Use the standard <strong>TopicNameStrategy</st=
+rong> for schema subject naming to align automatically with topic definitio=
+ns.</p>
+<p local-id=3D"af4c44b24f6c"><strong>Format:</strong></p>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence">&lt;top=
+ic-name&gt;-key
+&lt;topic-name&gt;-value
+</pre>
+</div>
+</div>
+<p local-id=3D"605ef95876e5"><strong>Examples:</strong></p>
+<ul local-id=3D"deabef66-3f91-444d-9e6a-58a690c8e785">
+<li local-id=3D"4cf3c91f-f5ca-47a0-aad5-3b97c1e5e075">
+<p local-id=3D"04709e2557b1"><code>prd.payments.invoice.created.v1-value</c=
+ode></p></li>
+<li local-id=3D"f17beec5-200d-44d4-b189-d63b8b293f69">
+<p local-id=3D"5928eef82943"><code>prd.payments.invoice.created.v1-key</cod=
+e></p></li>
+</ul>
+<h3 local-id=3D"62709e769caa" id=3D"StandardOperatingProcedure:ConfluentKaf=
+kaNamingConventions&amp;ResourceProvisioning-3.4KafkaConnect(Connectors)">3=
+.4 Kafka Connect (Connectors)</h3>
+<p local-id=3D"2b6f7699f44d">Source and Sink connectors must specify direct=
+ionality, plugin type, and the target integration system.</p>
+<p local-id=3D"8c16984a2ac4"><strong>Format:</strong></p>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence">conn-&l=
+t;env&gt;-&lt;source/sink&gt;-&lt;connector-type&gt;-&lt;target-system&gt;
+</pre>
+</div>
+</div>
+<p local-id=3D"6db11f4f0bc8"><strong>Examples:</strong></p>
+<ul local-id=3D"0a85cd29-28f1-4e56-a48f-e217297063a7">
+<li local-id=3D"81b92fa9-c6c3-4b7c-adc4-e3f3aa6a619d">
+<p local-id=3D"f041b6c9f7b2"><code>conn-prd-source-debezium-postgres-orders=
+</code></p></li>
+<li local-id=3D"95ac81cf-8852-43e7-a068-55a00efe81d9">
+<p local-id=3D"4e3114a8c5a9"><code>conn-uat-sink-s3-analytics-bucket</code>=
+</p></li>
+</ul>
+<h2 local-id=3D"bbb9e8b3add3" id=3D"StandardOperatingProcedure:ConfluentKaf=
+kaNamingConventions&amp;ResourceProvisioning-4.StandardConfigurationBaselin=
+e">4. Standard Configuration Baseline</h2>
+<div class=3D"table-wrap">
+<table data-table-width=3D"760" data-layout=3D"default" data-local-id=3D"96=
+36ac6b-9eac-406d-b23b-1965d541e22d" class=3D"confluenceTable">
+<tbody>
+<tr data-local-id=3D"069215b9-d522-4660-8470-acd285b90594">
+<td data-local-id=3D"c0da2218-fb9d-4f9d-af94-f116a4774e22" class=3D"conflue=
+nceTd">
+<p local-id=3D"158cefdf568f"><strong>Parameter</strong></p></td>
+<td data-local-id=3D"464d274d-9f5b-40a0-a2d2-1f5f4c7ec39f" class=3D"conflue=
+nceTd">
+<p local-id=3D"139675234acf"><strong>Development (dev)</strong></p></td>
+<td data-local-id=3D"4e5f037d-6abb-49b6-901b-ca33416e55f5" class=3D"conflue=
+nceTd">
+<p local-id=3D"30192441893d"><strong>Production (prd)</strong></p></td>
+</tr>
+<tr data-local-id=3D"f1c9dd03-e9f7-4b72-8c81-326551b7a292">
+<td data-local-id=3D"fd8c22fd-463a-49b7-a16c-5758ff4fc120" class=3D"conflue=
+nceTd">
+<p local-id=3D"65f472480afc"><strong>Replication Factor</strong></p></td>
+<td data-local-id=3D"a4bc2d14-3607-422b-b2a6-4ed661495722" class=3D"conflue=
+nceTd">
+<p local-id=3D"538ddfb3cda9">3</p></td>
+<td data-local-id=3D"ac18cdd3-0ff4-474c-860d-3538b1dbc718" class=3D"conflue=
+nceTd">
+<p local-id=3D"eb683b44b868">3</p></td>
+</tr>
+<tr data-local-id=3D"b2263196-d2cb-4829-a65e-bbfa566771b0">
+<td data-local-id=3D"4bf526b0-b394-4c97-bd6e-b29703b51175" class=3D"conflue=
+nceTd">
+<p local-id=3D"258f441b1f02"><strong>Minimum In-Sync Replicas (</strong><co=
+de>min.insync.replicas</code><strong>)</strong></p></td>
+<td data-local-id=3D"0ca6dacf-8ea3-4da3-9d99-fb4b5d528360" class=3D"conflue=
+nceTd">
+<p local-id=3D"1224c86a40bc">2</p></td>
+<td data-local-id=3D"85eb1e65-3153-4a17-804c-2487a1800628" class=3D"conflue=
+nceTd">
+<p local-id=3D"cd8b5f4eb65a">2</p></td>
+</tr>
+<tr data-local-id=3D"064f48d6-c3ba-4e2c-8bb1-9342d8daa4cf">
+<td data-local-id=3D"9d975b81-f8ee-422d-abda-bd73783e7ed6" class=3D"conflue=
+nceTd">
+<p local-id=3D"921a4d6615c1"><strong>Cleanup Policy (</strong><code>cleanup=
+.policy</code><strong>)</strong></p></td>
+<td data-local-id=3D"53c21cc4-8cab-447d-a0df-d6a758c7ae2c" class=3D"conflue=
+nceTd">
+<p local-id=3D"177252edacf3"><code>delete</code></p></td>
+<td data-local-id=3D"b8283dba-7206-439f-b42f-3d6a9c0a9cf8" class=3D"conflue=
+nceTd">
+<p local-id=3D"2784327543ae"><code>delete</code> or <code>compact</code> (p=
+er requirement)</p></td>
+</tr>
+<tr data-local-id=3D"f1d223e6-1f5d-4893-904d-b0c33d7ff4bd">
+<td data-local-id=3D"4b8f87ba-2a5c-4a55-8df4-2a98a6e25bf6" class=3D"conflue=
+nceTd">
+<p local-id=3D"b271c7bb34fb"><strong>Retention Period (</strong><code>reten=
+tion.ms</code><strong>)</strong></p></td>
+<td data-local-id=3D"b89f0eb6-bce3-4194-b383-e19b6df79eee" class=3D"conflue=
+nceTd">
+<p local-id=3D"1c02cbbda480">604800000 (7 days)</p></td>
+<td data-local-id=3D"e7fbe963-7e73-4f47-b879-ba62ad52f9a6" class=3D"conflue=
+nceTd">
+<p local-id=3D"9f712996260a">Custom (Default: 30 days)</p></td>
+</tr>
+<tr data-local-id=3D"068c06bf-31db-4fe0-8d11-d8a9c6778ffd">
+<td data-local-id=3D"3d1383a1-5ceb-4a94-b0fc-e9bb1385ce4c" class=3D"conflue=
+nceTd">
+<p local-id=3D"4003bd51ddad"><strong>Partition Count</strong></p></td>
+<td data-local-id=3D"b922a40c-b423-4377-9cdf-a211f2678909" class=3D"conflue=
+nceTd">
+<p local-id=3D"17b39f2175cb">3 - 6</p></td>
+<td data-local-id=3D"1d0f2aff-0c74-4033-9065-5c390af198bd" class=3D"conflue=
+nceTd">
+<p local-id=3D"11af9b401932">Multiples of consumer threads (Min: 6)</p></td=
+>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 local-id=3D"de2d46209ee0" id=3D"StandardOperatingProcedure:ConfluentKaf=
+kaNamingConventions&amp;ResourceProvisioning-5.Step-by-StepResourceProvisio=
+ningGuide">5. Step-by-Step Resource Provisioning Guide</h2>
+<p local-id=3D"c27182abe512">Follow these sequential steps to create and co=
+nfigure resources using the Confluent CLI or Confluent Cloud Console.</p>
+<p local-id=3D"ab6457c66054"><strong>1.Submit Architecture &amp; Request Re=
+view:</strong>Prerequisite Verification.</p>
+<p local-id=3D"8197cab58986">Before creating resources in <code>prd</code> =
+or <code>uat</code>:</p>
+<ul local-id=3D"ea8ed942-29f5-41b2-9f32-15cfe72bfc3e">
+<li local-id=3D"beaf9bac-6901-47d6-88d3-17b3ddc3bc89">
+<p local-id=3D"7cd88a54649e">Verify schema definitions (Avro / JSON / Proto=
+buf) with the data governance team.</p></li>
+<li local-id=3D"2087496d-5534-4b90-95d6-dfaac12dbb4e">
+<p local-id=3D"0eaf7a62d92c">Estimate throughput (MB/s), peak message volum=
+e, and required retention periods.</p></li>
+<li local-id=3D"31a450cb-622d-4809-ab9a-37a2fc4ad00a">
+<p local-id=3D"03dc15d2ad97">Create a Jira infrastructure request assigned =
+to <strong>Balaji K</strong> or <strong>Ananya Roy</strong>.</p></li>
+</ul>
+<p local-id=3D"0429190b2462"><strong>2.Authenticate &amp; Set Target Contex=
+t:</strong>Confluent CLI Setup.</p>
+<p local-id=3D"9232f018141a">Ensure you are targeting the correct Confluent=
+ environment and cluster before executing commands.</p>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence">Bash</p=
+re>
+</div>
+</div>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence"># Log i=
+n to Confluent Cloud
+confluent login
+
+# Set active environment
+confluent environment list
+confluent environment use env-xxxxxx
+
+# Set active Kafka cluster
+confluent kafka cluster list
+confluent kafka cluster use lkc-xxxxxx
+</pre>
+</div>
+</div>
+<p local-id=3D"94811e5ae9ec"><strong>3.Register Schema in Schema Registry:<=
+/strong>Schema-First Design.</p>
+<p local-id=3D"53c5431af458">Register the key and value schema definitions =
+to the target environment schema registry before creating producing topics.=
+</p>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence">Bash</p=
+re>
+</div>
+</div>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence">conflue=
+nt schema-registry schema create \
+  --subject prd.payments.invoice.created.v1-value \
+  --schema invoice_value_v1.avsc \
+  --type avro
+</pre>
+</div>
+</div>
+<p local-id=3D"13bb7efd3a34"><strong>4.Provision the Kafka Topic:</strong>S=
+tandardized Topic Creation.</p>
+<p local-id=3D"073553a9d44c">Create the topic applying standard replication=
+ and partition baseline constraints.</p>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence">Bash</p=
+re>
+</div>
+</div>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence">conflue=
+nt kafka topic create prd.payments.invoice.created.v1 \
+  --partitions 6 \
+  --config min.insync.replicas=3D2 \
+  --config retention.ms=3D2592000000 \
+  --config cleanup.policy=3Ddelete
+</pre>
+</div>
+</div>
+<p local-id=3D"ca83ecb68e62"><strong>5.Configure Service Account &amp; RBAC=
+ Permissions:</strong>Least-Privilege Security Policy.</p>
+<p local-id=3D"b2e4614279f3">Do not use administrative API keys for applica=
+tion deployment. Create a dedicated service account and apply scoped Role-B=
+ased Access Control (RBAC).</p>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence">Bash</p=
+re>
+</div>
+</div>
+<div class=3D"code panel pdl" style=3D"border-width: 1px;">
+<div class=3D"codeContent panelContent pdl">
+<pre class=3D"syntaxhighlighter-pre" data-syntaxhighlighter-params=3D"brush=
+: java; gutter: false; theme: Confluence" data-theme=3D"Confluence"># Creat=
+e application service account
+confluent iam service-account create sa-payment-service \
+  --description "Service account for payment processor application"
+
+# Grant DeveloperRead / DeveloperWrite roles on the specific topic
+confluent iam rbac role-binding create \
+  --principal User:sa-xxxxx \
+  --role DeveloperWrite \
+  --resource Topic:prd.payments.invoice.created.v1 \
+  --kafka-cluster-id lkc-xxxxxx
+</pre>
+</div>
+</div>
+<p local-id=3D"55552148310b"><strong>6.Verification &amp; Monitoring Setup:=
+</strong>Post-Deployment Check.</p>
+<ul local-id=3D"33d4a0d3-f31b-4333-8fad-2fb74e7ff254">
+<li local-id=3D"2386ae98-dc1a-415b-9229-c4b69b69852d">
+<p local-id=3D"ac23c3147397">Verify topic creation and configuration parame=
+ters in <strong>Confluent Control Center</strong>.</p></li>
+<li local-id=3D"14c73d43-cb3d-4adb-bd99-85e795d65d59">
+<p local-id=3D"342adce499a2">Validate producer connectivity and schema vali=
+dation rules.</p></li>
+<li local-id=3D"6f00e56c-50fd-469a-9c3a-b754fd9ad2fd">
+<p local-id=3D"8439692fe5ae">Set up lag alert thresholds in Datadog / Grafa=
+na using the consumer group ID <code>cg-prd-billing-service-payments-settle=
+ment</code>.</p></li>
+</ul>
+<h2 local-id=3D"06b2eeef4618" id=3D"StandardOperatingProcedure:ConfluentKaf=
+kaNamingConventions&amp;ResourceProvisioning-6.Support&amp;TroubleshootingC=
+ontact">6. Support &amp; Troubleshooting Contact</h2>
+<p local-id=3D"42195c5f91a9">For architecture reviews, permission requests,=
+ or cluster troubleshooting, contact:</p>
+<ul local-id=3D"6cb08767-3a26-4f6a-a1d5-98cd58a4e7ce">
+<li local-id=3D"9d9fb6be-dc0b-4789-8d32-75a4ab121b71">
+<p local-id=3D"f72fdfceab91"><strong>Kafka Operations Channel:</strong> <co=
+de>#kafka-platform-support</code></p></li>
+<li local-id=3D"1e8096f2-3ee4-40e0-a4ac-ffa119ecde78">
+<p local-id=3D"eb7bfcde9896"><strong>Lead Contact:</strong> Balaji K (<code=
+>balaji.k@company.com</code>)</p></li>
+</ul>
+    </div>
+</body>
+</html>
+------=_Part_46_1921261331.1790658616986--
