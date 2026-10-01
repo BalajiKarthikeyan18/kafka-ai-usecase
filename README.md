@@ -161,7 +161,7 @@ npm --version
 Example project directory:
 
 ```text
-D:\JLR\AI USECASE
+D:\AI USECASE
 ```
 
 Recommended structure:
@@ -202,7 +202,7 @@ Activate:
 You should see:
 
 ```text
-(.venv) D:\JLR\AI USECASE>
+(.venv) D:\AI USECASE>
 ```
 
 ---
