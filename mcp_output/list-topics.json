@@ -1,0 +1,14 @@
+{
+    "meta": null,
+    "content": [
+        {
+            "type": "text",
+            "text": "Kafka topics: mcp-test-topic,sample_data_orders,dev.sap.raw.tpc",
+            "annotations": null,
+            "meta": null
+        }
+    ],
+    "structured_content": null,
+    "is_error": false,
+    "result_type": "complete"
+}

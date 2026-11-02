@@ -1,0 +1,14 @@
+{
+    "meta": null,
+    "content": [
+        {
+            "type": "text",
+            "text": "No data returned for metric \"io.confluent.kafka.server/received_records\" in the specified interval.\n\nQuery details:\n  Metric: io.confluent.kafka.server/received_records\n  Dataset: cloud\n  Aggregation: SUM\n  Granularity: P1D\n  Interval: 2026-10-01T00:00:00Z/2026-11-01T00:00:00Z\n  Filter: {\"resource.kafka.id\":\"lkc-125nwo6\"}\n  Group by: metric.topic",
+            "annotations": null,
+            "meta": null
+        }
+    ],
+    "structured_content": null,
+    "is_error": false,
+    "result_type": "complete"
+}

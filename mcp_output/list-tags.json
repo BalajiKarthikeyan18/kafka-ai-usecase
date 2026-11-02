@@ -1,0 +1,14 @@
+{
+    "meta": null,
+    "content": [
+        {
+            "type": "text",
+            "text": "Successfully retrieved tags: [{\"category\":\"CLASSIFICATION\",\"createdBy\":\"root\",\"updatedBy\":\"root\",\"createTime\":1793596936597,\"updateTime\":1793596936597,\"version\":1,\"name\":\"sample_tag\",\"description\":\"Created for testing\",\"typeVersion\":\"1.0\",\"attributeDefs\":[],\"superTypes\":[],\"entityTypes\":[\"cf_entity\"],\"color\":\"BLUE_LIGHT\"},{\"category\":\"CLASSIFICATION\",\"createdBy\":\"root\",\"updatedBy\":\"root\",\"createTime\":1793597327767,\"updateTime\":1793597327767,\"version\":1,\"name\":\"dev\",\"description\":\"Created for testing\",\"typeVersion\":\"1.0\",\"attributeDefs\":[],\"superTypes\":[],\"entityTypes\":[\"cf_entity\"],\"color\":\"BLUE_LIGHT\"}]",
+            "annotations": null,
+            "meta": null
+        }
+    ],
+    "structured_content": null,
+    "is_error": false,
+    "result_type": "complete"
+}

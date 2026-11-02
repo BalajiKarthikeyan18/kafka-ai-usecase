@@ -1,0 +1,14 @@
+{
+    "meta": null,
+    "content": [
+        {
+            "type": "text",
+            "text": "Connector Config for sample_data: {\"cloud.environment\":\"prod\",\"cloud.provider\":\"gcp\",\"connector.class\":\"DatagenSource\",\"kafka.auth.mode\":\"SERVICE_ACCOUNT\",\"kafka.endpoint\":\"SASL_SSL://pkc-619z3.us-east1.gcp.confluent.cloud:9092\",\"kafka.region\":\"us-east1\",\"kafka.service.account.id\":\"sa-mkwm0o1\",\"kafka.topic\":\"sample_data_orders_1\",\"name\":\"sample_data\",\"output.data.format\":\"JSON_SR\",\"quickstart\":\"ORDERS\",\"tasks.max\":\"1\"}",
+            "annotations": null,
+            "meta": null
+        }
+    ],
+    "structured_content": null,
+    "is_error": false,
+    "result_type": "complete"
+}

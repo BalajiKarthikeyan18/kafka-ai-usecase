@@ -1,0 +1,23 @@
+{
+    "meta": {
+        "computePools": [
+            {
+                "id": "lfcp-rrvr3g7",
+                "name": "GCP.us-east1.env-rgk1k0.3839",
+                "cloud": "GCP",
+                "region": "us-east1"
+            }
+        ]
+    },
+    "content": [
+        {
+            "type": "text",
+            "text": "Successfully retrieved 1 compute pools:\n\nCompute Pool: GCP.us-east1.env-rgk1k0.3839\n  ID: lfcp-rrvr3g7\n  Cloud: GCP\n  Region: us-east1\n",
+            "annotations": null,
+            "meta": null
+        }
+    ],
+    "structured_content": null,
+    "is_error": false,
+    "result_type": "complete"
+}

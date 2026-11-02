@@ -1,0 +1,14 @@
+{
+    "meta": null,
+    "content": [
+        {
+            "type": "text",
+            "text": "{\"sample_data_orders-value\":{\"version\":1,\"id\":100001,\"schemaType\":\"JSON\",\"schema\":\"{\\\"type\\\":\\\"object\\\",\\\"title\\\":\\\"ksql.orders\\\",\\\"properties\\\":{\\\"itemid\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":2},\\\"address\\\":{\\\"type\\\":\\\"object\\\",\\\"title\\\":\\\"ksql.address\\\",\\\"connect.index\\\":4,\\\"properties\\\":{\\\"zipcode\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":2,\\\"connect.type\\\":\\\"int64\\\"},\\\"city\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":0},\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":1}}},\\\"orderid\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":1,\\\"connect.type\\\":\\\"int32\\\"},\\\"orderunits\\\":{\\\"type\\\":\\\"number\\\",\\\"connect.index\\\":3,\\\"connect.type\\\":\\\"float64\\\"},\\\"ordertime\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":0,\\\"connect.type\\\":\\\"int64\\\"}}}\"},\"sample_data_orders_1-value\":{\"version\":1,\"id\":100001,\"schemaType\":\"JSON\",\"schema\":\"{\\\"type\\\":\\\"object\\\",\\\"title\\\":\\\"ksql.orders\\\",\\\"properties\\\":{\\\"itemid\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":2},\\\"address\\\":{\\\"type\\\":\\\"object\\\",\\\"title\\\":\\\"ksql.address\\\",\\\"connect.index\\\":4,\\\"properties\\\":{\\\"zipcode\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":2,\\\"connect.type\\\":\\\"int64\\\"},\\\"city\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":0},\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":1}}},\\\"orderid\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":1,\\\"connect.type\\\":\\\"int32\\\"},\\\"orderunits\\\":{\\\"type\\\":\\\"number\\\",\\\"connect.index\\\":3,\\\"connect.type\\\":\\\"float64\\\"},\\\"ordertime\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":0,\\\"connect.type\\\":\\\"int64\\\"}}}\"}}",
+            "annotations": null,
+            "meta": null
+        }
+    ],
+    "structured_content": null,
+    "is_error": false,
+    "result_type": "complete"
+}

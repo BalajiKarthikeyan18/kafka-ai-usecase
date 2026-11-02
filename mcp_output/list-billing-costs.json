@@ -1,0 +1,30 @@
+{
+    "meta": {
+        "costs": [],
+        "summary": {
+            "total_amount": 0,
+            "original_amount": 0,
+            "discount_amount": 0,
+            "line_item_count": 0,
+            "date_range": {
+                "start": "2026-10-02",
+                "end": "2026-10-03"
+            }
+        },
+        "product_breakdown": {},
+        "pagination": {
+            "next": ""
+        }
+    },
+    "content": [
+        {
+            "type": "text",
+            "text": "Successfully retrieved billing costs:\n\nCost Summary (2026-10-02 to 2026-10-03):\n  Total Amount: $0.00\n  Original Amount: $0.00\n  Total Discount: $0.00\n  Total Line Items: 0\n\nPagination:\n  Next Page: \n",
+            "annotations": null,
+            "meta": null
+        }
+    ],
+    "structured_content": null,
+    "is_error": false,
+    "result_type": "complete"
+}

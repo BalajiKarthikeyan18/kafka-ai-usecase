@@ -1,0 +1,36 @@
+{
+    "meta": {
+        "clusters": [
+            {
+                "id": "lkc-125nwo6",
+                "name": "cluster_0",
+                "availability": "LOW",
+                "cloud": "GCP",
+                "region": "us-east1",
+                "environmentId": "env-rgk1k0",
+                "status": "PROVISIONED",
+                "cku": 0,
+                "endpoints": {
+                    "http": "https://pkc-619z3.us-east1.gcp.confluent.cloud:443",
+                    "bootstrap": "SASL_SSL://pkc-619z3.us-east1.gcp.confluent.cloud:9092"
+                },
+                "config": {
+                    "kind": "Basic",
+                    "zones": []
+                }
+            }
+        ],
+        "total": 1
+    },
+    "content": [
+        {
+            "type": "text",
+            "text": "Successfully retrieved 1 clusters:\n\nCluster: cluster_0\n  ID: lkc-125nwo6\n  Environment ID: env-rgk1k0\n  Status: PROVISIONED\n  Availability: LOW\n  Cloud: GCP\n  Region: us-east1\n  CKU: 0\n  Endpoints:\n    HTTP: https://pkc-619z3.us-east1.gcp.confluent.cloud:443\n    Bootstrap: SASL_SSL://pkc-619z3.us-east1.gcp.confluent.cloud:9092\n  Config:\n    Kind: Basic\n    Zones: \n",
+            "annotations": null,
+            "meta": null
+        }
+    ],
+    "structured_content": null,
+    "is_error": false,
+    "result_type": "complete"
+}

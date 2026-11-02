@@ -1,0 +1,14 @@
+{
+    "meta": null,
+    "content": [
+        {
+            "type": "text",
+            "text": "{\"searchParameters\":{\"includeDeleted\":false,\"limit\":100,\"offset\":0},\"types\":[\"kafka_topic\"],\"entities\":[{\"typeName\":\"kafka_topic\",\"attributes\":{\"createTime\":1790407964711,\"qualifiedName\":\"lsrc-j5z5d7q:lkc-125nwo6:dev.sap.raw.tpc\",\"name\":\"dev.sap.raw.tpc\",\"nameLower\":\"dev.sap.raw.tpc\",\"deprecatedTime\":0,\"tenant\":\"lsrc-j5z5d7q\"},\"guid\":\"1471e684-ac75-4145-8fc0-e5368cb62576\",\"status\":\"ACTIVE\",\"displayText\":\"dev.sap.raw.tpc\",\"classificationNames\":[\"sample_tag\",\"dev\"],\"meaningNames\":[],\"meanings\":[],\"isIncomplete\":false,\"labels\":[]}]}",
+            "annotations": null,
+            "meta": null
+        }
+    ],
+    "structured_content": null,
+    "is_error": false,
+    "result_type": "complete"
+}
