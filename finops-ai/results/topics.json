@@ -1,16 +1,17 @@
 {
     "total_clusters": 1,
-    "successful_clusters": 0,
-    "failed_clusters": 1,
+    "successful_clusters": 1,
+    "failed_clusters": 0,
     "topic_results": [
         {
             "environment_name": "default",
             "environment_id": "env-rgk1k0",
             "cluster_name": "cluster_0",
             "cluster_id": "lkc-125nwo6",
-            "status": "failed",
-            "error": "[TextContent(type='text', text='Local: Broker transport failure', annotations=None, meta=None)]",
-            "raw_response": []
+            "status": "success",
+            "raw_response": [
+                "Kafka topics: mcp-test-topic,sample_data_orders,sample_data_orders_1,dev.sap.raw.tpc"
+            ]
         }
     ]
 }

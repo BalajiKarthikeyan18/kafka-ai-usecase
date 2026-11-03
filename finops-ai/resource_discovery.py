@@ -534,8 +534,6 @@ async def discover_schemas(session, environment):
 
         text_blocks = get_text_content(response)
 
-        print("\nSchema response:")
-
         for block in text_blocks:
             print(block)
 
@@ -554,6 +552,136 @@ async def discover_schemas(session, environment):
             "environment_name": environment["name"],
             "environment_id": environment_id,
             "status": "failed",
+            "error": str(error),
+            "raw_response": []
+        }
+
+
+# ==================================================
+# COMPUTE POOL DISCOVERY
+# ==================================================
+
+def extract_compute_pool_details(raw_text, environment):
+    """
+    Extract compute pool details from the MCP response.
+
+    The parser supports the text format returned by
+    list-compute-pools.
+    """
+
+    compute_pools = []
+
+    sections = re.split(
+        r"(?=^\s*(?:Compute Pool|Pool):\s*)",
+        raw_text,
+        flags=re.MULTILINE | re.IGNORECASE
+    )
+
+    for section in sections:
+
+        name_match = re.search(
+            r"^\s*(?:Compute Pool|Pool):\s*(.+)",
+            section,
+            re.MULTILINE | re.IGNORECASE
+        )
+
+        id_match = re.search(
+            r"^\s*ID:\s*(lfcp-[A-Za-z0-9]+)",
+            section,
+            re.MULTILINE
+        )
+
+        # Some responses may use a compact format.
+        if not name_match or not id_match:
+            continue
+
+        pool = {
+            "compute_pool_name": name_match.group(1).strip(),
+            "compute_pool_id": id_match.group(1).strip(),
+            "environment_name": environment["name"],
+            "environment_id": environment["id"]
+        }
+
+        fields = {
+            "cloud": r"^\s*Cloud:\s*(.+)",
+            "region": r"^\s*Region:\s*(.+)",
+            "status": r"^\s*Status:\s*(.+)",
+            "max_cfu": r"^\s*Max CFU:\s*(.+)",
+            "current_cfu": r"^\s*Current CFU:\s*(.+)"
+        }
+
+        for field, pattern in fields.items():
+
+            match = re.search(
+                pattern,
+                section,
+                re.MULTILINE | re.IGNORECASE
+            )
+
+            if match:
+                pool[field] = match.group(1).strip()
+
+        compute_pools.append(pool)
+
+    return compute_pools
+
+
+async def discover_compute_pools(session, environment):
+
+    environment_id = environment["id"]
+
+    print(
+        f"\nDiscovering compute pools in environment: "
+        f"{environment['name']} ({environment_id})"
+    )
+
+    try:
+
+        response = await session.call_tool(
+            "list-compute-pools",
+            arguments={
+                "environmentId": environment_id,
+                "pageSize": 100
+            }
+        )
+
+        if response.is_error:
+            raise RuntimeError(str(response.content))
+
+        text_blocks = get_text_content(response)
+        raw_text = "\n".join(text_blocks)
+
+        print("\nCompute pool response:")
+        print(raw_text)
+
+        compute_pools = extract_compute_pool_details(
+            raw_text,
+            environment
+        )
+
+        print(
+            f"\nDiscovered {len(compute_pools)} compute pool(s)."
+        )
+
+        return {
+            "environment_name": environment["name"],
+            "environment_id": environment_id,
+            "status": "success",
+            "total_compute_pools": len(compute_pools),
+            "compute_pools": compute_pools,
+            "raw_response": text_blocks
+        }
+
+    except Exception as error:
+
+        print(f"Compute pool discovery failed: {error}")
+
+        return {
+            "environment_name": environment["name"],
+            "environment_id": environment_id,
+            "status": "failed",
+            "total_compute_pools": 0,
+            "compute_pools": [],
             "error": str(error),
             "raw_response": []
         }
@@ -712,37 +840,77 @@ async def discover_all_resources():
 
             all_schema_results.append(result)
 
-        successful_schema_environments = sum(
-            result["status"] == "success"
-            for result in all_schema_results
-        )
-
-        failed_schema_environments = sum(
-            result["status"] == "failed"
-            for result in all_schema_results
-        )
-
         save_json(
             "schemas.json",
             {
                 "total_environments_checked": len(all_schema_results),
-                "successful_environments": successful_schema_environments,
-                "failed_environments": failed_schema_environments,
+                "successful_environments": sum(
+                    r["status"] == "success"
+                    for r in all_schema_results
+                ),
+                "failed_environments": sum(
+                    r["status"] == "failed"
+                    for r in all_schema_results
+                ),
                 "schema_results": all_schema_results
             }
         )
 
-        # STEP 6: SUMMARY
+        # STEP 6: COMPUTE POOLS
+
+        all_compute_pool_results = []
+        all_compute_pools = []
+
+        for environment in environments:
+
+            if not environment.get("id"):
+                continue
+
+            result = await discover_compute_pools(
+                session,
+                environment
+            )
+
+            all_compute_pool_results.append(result)
+
+            all_compute_pools.extend(
+                result["compute_pools"]
+            )
+
+        successful_pool_environments = sum(
+            r["status"] == "success"
+            for r in all_compute_pool_results
+        )
+
+        failed_pool_environments = sum(
+            r["status"] == "failed"
+            for r in all_compute_pool_results
+        )
+
+        save_json(
+            "compute_pools.json",
+            {
+                "total_environments_checked": len(
+                    all_compute_pool_results
+                ),
+                "total_compute_pools": len(all_compute_pools),
+                "successful_environments": successful_pool_environments,
+                "failed_environments": failed_pool_environments,
+                "compute_pool_results": all_compute_pool_results
+            }
+        )
+
+        # STEP 7: FINAL SUMMARY
 
         print("\n======================================")
         print("RESOURCE DISCOVERY SUMMARY")
         print("======================================")
 
         print(f"Environments: {len(environments)}")
-        print(f"Clusters: {len(all_clusters)}")
+        print(f"Kafka clusters: {len(all_clusters)}")
 
         print(
-            f"Successful topic discovery: "
+            f"Topic discovery successful: "
             f"{sum(r['status'] == 'success' for r in all_topic_results)}"
         )
 
@@ -751,12 +919,19 @@ async def discover_all_resources():
 
         print(
             f"Schema discovery successful: "
-            f"{successful_schema_environments}"
+            f"{sum(r['status'] == 'success' for r in all_schema_results)}"
+        )
+
+        print(f"Compute pools: {len(all_compute_pools)}")
+
+        print(
+            f"Compute pool discovery successful: "
+            f"{successful_pool_environments}"
         )
 
         print(
-            f"Schema discovery failed: "
-            f"{failed_schema_environments}"
+            f"Compute pool discovery failed: "
+            f"{failed_pool_environments}"
         )
 
         print("\nDiscovery workflow completed.")
