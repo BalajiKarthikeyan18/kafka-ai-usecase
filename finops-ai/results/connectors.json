@@ -1,0 +1,28 @@
+{
+    "total_clusters_checked": 1,
+    "total_connectors": 1,
+    "successful_configurations": 1,
+    "failed_configurations": 0,
+    "connector_results": [
+        {
+            "environment_name": "default",
+            "environment_id": "env-rgk1k0",
+            "cluster_name": "cluster_0",
+            "cluster_id": "lkc-125nwo6",
+            "status": "success",
+            "total_connectors": 1,
+            "connectors": [
+                {
+                    "connector_name": "sample_data",
+                    "status": "success",
+                    "configuration_response": [
+                        "Connector Config for sample_data: {\"cloud.environment\":\"prod\",\"cloud.provider\":\"gcp\",\"connector.class\":\"DatagenSource\",\"kafka.auth.mode\":\"SERVICE_ACCOUNT\",\"kafka.endpoint\":\"SASL_SSL://pkc-619z3.us-east1.gcp.confluent.cloud:9092\",\"kafka.region\":\"us-east1\",\"kafka.service.account.id\":\"sa-mkwm0o1\",\"kafka.topic\":\"sample_data_orders_1\",\"name\":\"sample_data\",\"output.data.format\":\"JSON_SR\",\"quickstart\":\"ORDERS\",\"tasks.max\":\"1\"}"
+                    ]
+                }
+            ],
+            "raw_response": [
+                "Active Connectors:\nsample_data"
+            ]
+        }
+    ]
+}

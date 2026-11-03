@@ -13,7 +13,6 @@ from mcp_client import get_mcp_session
 
 BASE_DIR = Path(__file__).resolve().parent
 RESULTS_DIR = BASE_DIR / "results"
-
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -22,24 +21,15 @@ RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 # ==================================================
 
 def save_json(filename, data):
-    """Save discovery results as JSON."""
-
     output_file = RESULTS_DIR / filename
 
     with open(output_file, "w", encoding="utf-8") as file:
-        json.dump(
-            data,
-            file,
-            indent=4,
-            ensure_ascii=False
-        )
+        json.dump(data, file, indent=4, ensure_ascii=False)
 
     print(f"Saved: {output_file}")
 
 
 def get_text_content(response):
-    """Extract text blocks from an MCP response."""
-
     return [
         item.text
         for item in response.content
@@ -54,62 +44,46 @@ def get_text_content(response):
 def extract_environment_details(raw_text):
 
     environments = []
-    current_environment = None
+    current = None
 
     for line in raw_text.splitlines():
 
-        name_match = re.match(
-            r"\s*Environment:\s*(.+)", line
-        )
+        patterns = {
+            "name": r"^\s*Environment:\s*(.+)",
+            "id": r"^\s*ID:\s*(\S+)",
+            "resource_name": r"^\s*Resource Name:\s*(\S+)",
+            "created_at": r"^\s*Created At:\s*(\S+)",
+            "updated_at": r"^\s*Updated At:\s*(\S+)",
+            "stream_governance_package":
+                r"^\s*Stream Governance Package:\s*(.+)"
+        }
 
-        id_match = re.match(
-            r"\s*ID:\s*(\S+)", line
-        )
+        matched = False
 
-        resource_match = re.match(
-            r"\s*Resource Name:\s*(\S+)", line
-        )
+        for field, pattern in patterns.items():
 
-        created_match = re.match(
-            r"\s*Created At:\s*(\S+)", line
-        )
+            match = re.match(pattern, line)
 
-        updated_match = re.match(
-            r"\s*Updated At:\s*(\S+)", line
-        )
+            if not match:
+                continue
 
-        governance_match = re.match(
-            r"\s*Stream Governance Package:\s*(.+)", line
-        )
+            if field == "name":
 
-        if name_match:
+                if current:
+                    environments.append(current)
 
-            if current_environment:
-                environments.append(current_environment)
+                current = {
+                    "name": match.group(1).strip()
+                }
 
-            current_environment = {
-                "name": name_match.group(1).strip()
-            }
+            elif current:
+                current[field] = match.group(1).strip()
 
-        elif current_environment and id_match:
-            current_environment["id"] = id_match.group(1)
+            matched = True
+            break
 
-        elif current_environment and resource_match:
-            current_environment["resource_name"] = resource_match.group(1)
-
-        elif current_environment and created_match:
-            current_environment["created_at"] = created_match.group(1)
-
-        elif current_environment and updated_match:
-            current_environment["updated_at"] = updated_match.group(1)
-
-        elif current_environment and governance_match:
-            current_environment["stream_governance_package"] = (
-                governance_match.group(1).strip()
-            )
-
-    if current_environment:
-        environments.append(current_environment)
+    if current:
+        environments.append(current)
 
     return environments
 
@@ -124,24 +98,23 @@ async def discover_environments(session):
     )
 
     if response.is_error:
-        raise RuntimeError(
-            f"Environment discovery failed: {response.content}"
-        )
+        raise RuntimeError(str(response.content))
 
     text_blocks = get_text_content(response)
-    raw_text = "\n".join(text_blocks)
+    environments = extract_environment_details(
+        "\n".join(text_blocks)
+    )
 
-    environments = extract_environment_details(raw_text)
+    save_json(
+        "environments.json",
+        {
+            "total_environments": len(environments),
+            "environments": environments,
+            "raw_response": text_blocks
+        }
+    )
 
-    result = {
-        "total_environments": len(environments),
-        "environments": environments,
-        "raw_response": text_blocks
-    }
-
-    save_json("environments.json", result)
-
-    print(f"\nDiscovered {len(environments)} environment(s).")
+    print(f"Discovered {len(environments)} environment(s).")
 
     for environment in environments:
         print(
@@ -160,37 +133,37 @@ def extract_cluster_details(raw_text, environment):
 
     clusters = []
 
-    cluster_sections = re.split(
+    sections = re.split(
         r"(?=^\s*Cluster:\s*)",
         raw_text,
         flags=re.MULTILINE
     )
 
-    for section in cluster_sections:
+    for section in sections:
 
-        name_match = re.search(
+        name = re.search(
             r"^\s*Cluster:\s*(.+)",
             section,
             re.MULTILINE
         )
 
-        id_match = re.search(
+        cluster_id = re.search(
             r"^\s*ID:\s*(\S+)",
             section,
             re.MULTILINE
         )
 
-        if not name_match or not id_match:
+        if not name or not cluster_id:
             continue
 
         cluster = {
-            "cluster_name": name_match.group(1).strip(),
-            "cluster_id": id_match.group(1).strip(),
+            "cluster_name": name.group(1).strip(),
+            "cluster_id": cluster_id.group(1).strip(),
             "environment_name": environment["name"],
             "environment_id": environment["id"]
         }
 
-        optional_fields = {
+        fields = {
             "status": r"^\s*Status:\s*(.+)",
             "availability": r"^\s*Availability:\s*(.+)",
             "cloud": r"^\s*Cloud:\s*(.+)",
@@ -200,7 +173,7 @@ def extract_cluster_details(raw_text, environment):
             "zones": r"^\s*Zones:\s*(.*)"
         }
 
-        for field, pattern in optional_fields.items():
+        for field, pattern in fields.items():
 
             match = re.search(
                 pattern,
@@ -209,16 +182,13 @@ def extract_cluster_details(raw_text, environment):
             )
 
             if match:
-
                 value = match.group(1).strip()
 
                 if field == "cku":
                     try:
                         value = float(value)
-
                         if value.is_integer():
                             value = int(value)
-
                     except ValueError:
                         pass
 
@@ -226,23 +196,19 @@ def extract_cluster_details(raw_text, environment):
 
         endpoints = {}
 
-        http_match = re.search(
-            r"^\s*HTTP:\s*(\S+)",
-            section,
-            re.MULTILINE
-        )
+        for field, pattern in {
+            "http": r"^\s*HTTP:\s*(\S+)",
+            "bootstrap": r"^\s*Bootstrap:\s*(\S+)"
+        }.items():
 
-        bootstrap_match = re.search(
-            r"^\s*Bootstrap:\s*(\S+)",
-            section,
-            re.MULTILINE
-        )
+            match = re.search(
+                pattern,
+                section,
+                re.MULTILINE
+            )
 
-        if http_match:
-            endpoints["http"] = http_match.group(1)
-
-        if bootstrap_match:
-            endpoints["bootstrap"] = bootstrap_match.group(1)
+            if match:
+                endpoints[field] = match.group(1)
 
         cluster["endpoints"] = endpoints
 
@@ -268,16 +234,12 @@ async def discover_clusters(session, environment):
     )
 
     if response.is_error:
-        raise RuntimeError(
-            f"Cluster discovery failed for {environment_id}: "
-            f"{response.content}"
-        )
+        raise RuntimeError(str(response.content))
 
     text_blocks = get_text_content(response)
-    raw_text = "\n".join(text_blocks)
 
     clusters = extract_cluster_details(
-        raw_text,
+        "\n".join(text_blocks),
         environment
     )
 
@@ -323,30 +285,12 @@ async def discover_topics(session, environment, cluster):
         )
 
         if response.is_error:
-
-            error_message = str(response.content)
-
-            print(
-                f"Topic discovery failed for {cluster_id}: "
-                f"{error_message}"
-            )
-
-            return {
-                "environment_name": environment["name"],
-                "environment_id": environment_id,
-                "cluster_name": cluster["cluster_name"],
-                "cluster_id": cluster_id,
-                "status": "failed",
-                "error": error_message,
-                "raw_response": []
-            }
+            raise RuntimeError(str(response.content))
 
         text_blocks = get_text_content(response)
 
-        print("\nTopic response:")
-
-        for text_block in text_blocks:
-            print(text_block)
+        for block in text_blocks:
+            print(block)
 
         return {
             "environment_name": environment["name"],
@@ -359,12 +303,7 @@ async def discover_topics(session, environment, cluster):
 
     except Exception as error:
 
-        error_message = str(error)
-
-        print(
-            f"Unexpected topic discovery error for "
-            f"{cluster_id}: {error_message}"
-        )
+        print(f"Topic discovery failed: {error}")
 
         return {
             "environment_name": environment["name"],
@@ -372,7 +311,198 @@ async def discover_topics(session, environment, cluster):
             "cluster_name": cluster["cluster_name"],
             "cluster_id": cluster_id,
             "status": "failed",
-            "error": error_message,
+            "error": str(error),
+            "raw_response": []
+        }
+
+
+# ==================================================
+# CONNECTOR NAME EXTRACTION
+# ==================================================
+
+def extract_connector_names(raw_text):
+    """
+    Supports both formats:
+
+    Active Connectors: sample_data
+
+    Active Connectors:
+    sample_data
+    """
+
+    connector_names = []
+
+    lines = raw_text.splitlines()
+
+    for index, line in enumerate(lines):
+
+        match = re.match(
+            r"^\s*Active Connectors:\s*(.*)$",
+            line,
+            re.IGNORECASE
+        )
+
+        if not match:
+            continue
+
+        # Connector names on the same line.
+        same_line_names = match.group(1).strip()
+
+        if same_line_names:
+            candidates = same_line_names.split(",")
+
+        else:
+            # Connector names on subsequent lines.
+            candidates = []
+
+            for next_line in lines[index + 1:]:
+
+                value = next_line.strip()
+
+                if not value:
+                    continue
+
+                # Stop if another section begins.
+                if (
+                    value.lower().startswith("pagination:")
+                    or re.match(r"^[A-Za-z][A-Za-z ]+:", value)
+                ):
+                    break
+
+                candidates.extend(value.split(","))
+
+        for candidate in candidates:
+
+            name = candidate.strip()
+
+            if (
+                name
+                and name.lower() not in {
+                    "none",
+                    "no connectors",
+                    "null"
+                }
+                and name not in connector_names
+            ):
+                connector_names.append(name)
+
+    return connector_names
+
+
+# ==================================================
+# CONNECTOR CONFIGURATION DISCOVERY
+# ==================================================
+
+async def discover_connectors(session, environment, cluster):
+
+    environment_id = environment["id"]
+    cluster_id = cluster["cluster_id"]
+
+    print(
+        f"\nDiscovering connectors in cluster: "
+        f"{cluster['cluster_name']} ({cluster_id})"
+    )
+
+    try:
+
+        response = await session.call_tool(
+            "list-connectors",
+            arguments={
+                "environmentId": environment_id,
+                "clusterId": cluster_id
+            }
+        )
+
+        if response.is_error:
+            raise RuntimeError(str(response.content))
+
+        text_blocks = get_text_content(response)
+        raw_text = "\n".join(text_blocks)
+
+        print("\nConnector listing response:")
+        print(raw_text)
+
+        connector_names = extract_connector_names(raw_text)
+
+        print(
+            f"\nDiscovered {len(connector_names)} connector(s)."
+        )
+
+        connector_details = []
+
+        for connector_name in connector_names:
+
+            print(
+                f"\nRetrieving configuration for: "
+                f"{connector_name}"
+            )
+
+            try:
+
+                config_response = await session.call_tool(
+                    "get-connector-config",
+                    arguments={
+                        "environmentId": environment_id,
+                        "clusterId": cluster_id,
+                        "connectorName": connector_name
+                    }
+                )
+
+                if config_response.is_error:
+                    raise RuntimeError(
+                        str(config_response.content)
+                    )
+
+                config_text = get_text_content(config_response)
+
+                connector_details.append({
+                    "connector_name": connector_name,
+                    "status": "success",
+                    "configuration_response": config_text
+                })
+
+                print(
+                    f"Configuration retrieved: {connector_name}"
+                )
+
+            except Exception as error:
+
+                print(
+                    f"Configuration retrieval failed for "
+                    f"{connector_name}: {error}"
+                )
+
+                connector_details.append({
+                    "connector_name": connector_name,
+                    "status": "failed",
+                    "error": str(error),
+                    "configuration_response": []
+                })
+
+        return {
+            "environment_name": environment["name"],
+            "environment_id": environment_id,
+            "cluster_name": cluster["cluster_name"],
+            "cluster_id": cluster_id,
+            "status": "success",
+            "total_connectors": len(connector_names),
+            "connectors": connector_details,
+            "raw_response": text_blocks
+        }
+
+    except Exception as error:
+
+        print(f"Connector discovery failed: {error}")
+
+        return {
+            "environment_name": environment["name"],
+            "environment_id": environment_id,
+            "cluster_name": cluster["cluster_name"],
+            "cluster_id": cluster_id,
+            "status": "failed",
+            "total_connectors": 0,
+            "connectors": [],
+            "error": str(error),
             "raw_response": []
         }
 
@@ -385,36 +515,15 @@ async def discover_all_resources():
 
     async with get_mcp_session() as session:
 
-        # STEP 1: Discover environments
+        # STEP 1: ENVIRONMENTS
 
         environments = await discover_environments(session)
 
         if not environments:
-
             print("\nNo environments found.")
-
-            save_json(
-                "clusters.json",
-                {
-                    "total_environments": 0,
-                    "total_clusters": 0,
-                    "cluster_results": []
-                }
-            )
-
-            save_json(
-                "topics.json",
-                {
-                    "total_clusters": 0,
-                    "successful_clusters": 0,
-                    "failed_clusters": 0,
-                    "topic_results": []
-                }
-            )
-
             return
 
-        # STEP 2: Discover clusters
+        # STEP 2: CLUSTERS
 
         all_cluster_results = []
         all_clusters = []
@@ -422,21 +531,15 @@ async def discover_all_resources():
         for environment in environments:
 
             if not environment.get("id"):
-                print(
-                    f"Skipping environment without ID: {environment}"
-                )
                 continue
 
-            cluster_result = await discover_clusters(
+            result = await discover_clusters(
                 session,
                 environment
             )
 
-            all_cluster_results.append(cluster_result)
-
-            all_clusters.extend(
-                cluster_result["clusters"]
-            )
+            all_cluster_results.append(result)
+            all_clusters.extend(result["clusters"])
 
         save_json(
             "clusters.json",
@@ -447,7 +550,7 @@ async def discover_all_resources():
             }
         )
 
-        # STEP 3: Discover topics
+        # STEP 3: TOPICS
 
         all_topic_results = []
 
@@ -464,37 +567,84 @@ async def discover_all_resources():
             if not environment:
                 continue
 
-            topic_result = await discover_topics(
+            result = await discover_topics(
                 session,
                 environment,
                 cluster
             )
 
-            all_topic_results.append(topic_result)
-
-        # STEP 4: Save topic results
-
-        successful_clusters = sum(
-            1 for result in all_topic_results
-            if result["status"] == "success"
-        )
-
-        failed_clusters = sum(
-            1 for result in all_topic_results
-            if result["status"] == "failed"
-        )
+            all_topic_results.append(result)
 
         save_json(
             "topics.json",
             {
                 "total_clusters": len(all_topic_results),
-                "successful_clusters": successful_clusters,
-                "failed_clusters": failed_clusters,
+                "successful_clusters": sum(
+                    r["status"] == "success"
+                    for r in all_topic_results
+                ),
+                "failed_clusters": sum(
+                    r["status"] == "failed"
+                    for r in all_topic_results
+                ),
                 "topic_results": all_topic_results
             }
         )
 
-        # STEP 5: Summary
+        # STEP 4: CONNECTORS
+
+        all_connector_results = []
+
+        for cluster in all_clusters:
+
+            environment = next(
+                (
+                    env for env in environments
+                    if env["id"] == cluster["environment_id"]
+                ),
+                None
+            )
+
+            if not environment:
+                continue
+
+            result = await discover_connectors(
+                session,
+                environment,
+                cluster
+            )
+
+            all_connector_results.append(result)
+
+        total_connectors = sum(
+            result["total_connectors"]
+            for result in all_connector_results
+        )
+
+        successful_configs = sum(
+            connector["status"] == "success"
+            for result in all_connector_results
+            for connector in result["connectors"]
+        )
+
+        failed_configs = sum(
+            connector["status"] == "failed"
+            for result in all_connector_results
+            for connector in result["connectors"]
+        )
+
+        save_json(
+            "connectors.json",
+            {
+                "total_clusters_checked": len(all_connector_results),
+                "total_connectors": total_connectors,
+                "successful_configurations": successful_configs,
+                "failed_configurations": failed_configs,
+                "connector_results": all_connector_results
+            }
+        )
+
+        # STEP 5: SUMMARY
 
         print("\n======================================")
         print("RESOURCE DISCOVERY SUMMARY")
@@ -502,8 +652,15 @@ async def discover_all_resources():
 
         print(f"Environments discovered: {len(environments)}")
         print(f"Clusters discovered: {len(all_clusters)}")
-        print(f"Topic discovery successful: {successful_clusters}")
-        print(f"Topic discovery failed: {failed_clusters}")
+
+        print(
+            f"Topic discovery successful: "
+            f"{sum(r['status'] == 'success' for r in all_topic_results)}"
+        )
+
+        print(f"Connectors discovered: {total_connectors}")
+        print(f"Configurations retrieved: {successful_configs}")
+        print(f"Configuration failures: {failed_configs}")
 
         print("\nDiscovery workflow completed.")
 
@@ -513,5 +670,4 @@ async def discover_all_resources():
 # ==================================================
 
 if __name__ == "__main__":
-
     asyncio.run(discover_all_resources())
