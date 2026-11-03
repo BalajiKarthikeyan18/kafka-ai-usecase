@@ -1,0 +1,16 @@
+{
+    "total_environments": 1,
+    "environments": [
+        {
+            "name": "default",
+            "id": "env-rgk1k0",
+            "resource_name": "crn://confluent.cloud/organization=438d1a49-ef14-4b5e-aa5d-c837ea018e9c/environment=env-rgk1k0",
+            "created_at": "2026-09-17T08:54:26.870384Z",
+            "updated_at": "2026-09-17T08:54:26.870384Z",
+            "stream_governance_package": "ESSENTIALS"
+        }
+    ],
+    "raw_response": [
+        "Successfully retrieved 1 environments:\n\nEnvironment: default\n  ID: env-rgk1k0\n  Resource Name: crn://confluent.cloud/organization=438d1a49-ef14-4b5e-aa5d-c837ea018e9c/environment=env-rgk1k0\n  Created At: 2026-09-17T08:54:26.870384Z\n  Updated At: 2026-09-17T08:54:26.870384Z\n  Stream Governance Package: ESSENTIALS\n\n\nPagination:\n"
+    ]
+}
