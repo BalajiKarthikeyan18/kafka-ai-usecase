@@ -2,3 +2,5 @@ google-genai
 python-dotenv
 pandas
 mcp
+streamlit
+requests
