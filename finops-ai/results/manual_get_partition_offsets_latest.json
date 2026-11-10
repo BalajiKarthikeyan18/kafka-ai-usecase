@@ -1,0 +1,7 @@
+{
+  "is_error": false,
+  "structured_content": null,
+  "content": [
+    "Failed to fetch partition offsets for \"sample_data_orders\": Kafka error (-185): Timeout exceeded while fetching latest offsets."
+  ]
+}

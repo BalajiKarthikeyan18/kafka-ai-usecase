@@ -1,0 +1,5 @@
+resource_type,resource_name,resource_id,environment_id,cluster_id,billing_status
+environment,default,env-rgk1k0,,,NO_INDIVIDUAL_BILLING_RECORD_FOUND
+kafka_cluster,,,,,NO_INDIVIDUAL_BILLING_RECORD_FOUND
+schema_subject,,,env-rgk1k0,,NO_INDIVIDUAL_BILLING_RECORD_FOUND
+flink_compute_pool,GCP.us-east1.env-rgk1k0.3839,,env-rgk1k0,,NO_INDIVIDUAL_BILLING_RECORD_FOUND

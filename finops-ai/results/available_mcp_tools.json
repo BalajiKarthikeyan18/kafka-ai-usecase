@@ -1,0 +1,247 @@
+[
+  {
+    "name": "list-topics",
+    "description": "List all topics in the Kafka cluster.",
+    "input_schema": {}
+  },
+  {
+    "name": "create-topics",
+    "description": "Create one or more Kafka topics with an optional partition count and replication factor.",
+    "input_schema": {}
+  },
+  {
+    "name": "delete-topics",
+    "description": "Delete the topic with the given names.",
+    "input_schema": {}
+  },
+  {
+    "name": "produce-message",
+    "description": "Produce records to a Kafka topic. Supports Confluent Schema Registry serialization (AVRO, JSON, PROTOBUF) for both key and value, plus optional record-level partition, timestamp, and headers for faithful reproduction of records across clusters.\n\nBefore producing, check if the topic has a registered schema for <topicName>-value and <topicName>-key. If a schema exists, set useSchemaRegistry to true and specify the appropriate schemaType. If the topic does not exist, it can be created via the create-topics tool.",
+    "input_schema": {}
+  },
+  {
+    "name": "consume-messages",
+    "description": "Consume messages from Kafka topics. Optionally restrict to a partition, start from an offset, timestamp, earliest, latest, or tailmost pre-existing messages. Auto-deserializes Schema Registry messages (AVRO/JSON/PROTOBUF) when SR is configured on the connection; pass `valueFormat: {disableSchemaRegistry: true}` (or `keyFormat`) to skip decoding per side.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-partition-offsets",
+    "description": "Return per-partition low/high watermarks and message counts for a Kafka topic. Use this to size a backfill, measure lag relative to a known offset, or check whether a topic is still receiving writes — without consuming. Pass `partition` to restrict the response to a single partition.",
+    "input_schema": {}
+  },
+  {
+    "name": "list-consumer-groups",
+    "description": "List consumer groups on a Kafka cluster — wraps the broker's listGroups admin call. Optional filters narrow the result server-side. Response carries one entry per group with groupId, state, type, protocolType, and isSimpleConsumerGroup, plus an errors array of any per-broker partial failures.",
+    "input_schema": {}
+  },
+  {
+    "name": "describe-consumer-group",
+    "description": "Describe a single consumer group on a Kafka cluster. Returns the group's state, type, protocol, partition assignor, coordinator, and per-member assignment as a flat array of {topic, partition} pairs.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-consumer-group-lag",
+    "description": "Compute live offset lag for a single Kafka consumer group. Returns per-(topic, partition) {committedOffset, highWatermark, lag} rows and a total lag count across the group. Pass `topics` to restrict the response to specific topics; omit to compute lag for every topic the group has touched. Partitions the group has never committed to surface with `committedOffset: null` and `lag: null` and are excluded from `totalLag`.",
+    "input_schema": {}
+  },
+  {
+    "name": "list-compute-pools",
+    "description": "Get the Flink compute pools in the Confluent Cloud environment. Paginated; if the response includes a nextPageToken, pass it back as pageToken to fetch additional pages.",
+    "input_schema": {}
+  },
+  {
+    "name": "list-connectors",
+    "description": "Retrieve a list of \"names\" of the active connectors. You can then make a read request for a specific connector by name.",
+    "input_schema": {}
+  },
+  {
+    "name": "create-connector",
+    "description": "Create a new connector. Returns the new connector information if successful.",
+    "input_schema": {}
+  },
+  {
+    "name": "delete-connector",
+    "description": "Delete an existing connector. Returns success message if deletion was successful.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-connector-config",
+    "description": "Retrieve the full configuration map for a connector. Returns the flat config object the connector was created/updated with.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-connector-offsets",
+    "description": "Retrieve current offsets for a connector's tasks. Useful for detecting lag, stalled tasks, or assisting recovery.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-connector-status",
+    "description": "Get the current state of a connector and its tasks (RUNNING, FAILED, PAUSED, UNASSIGNED) including failure traces if any.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-connector-tasks",
+    "description": "List the tasks of a connector along with their configurations.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-connector-error-summary",
+    "description": "Summarize a connector's current errors. Projects Confluent Cloud's /status diagnostics (error_summary, validation_errors, errors_from_trace, override_message, failed task traces) into a compact, agent-friendly form. Returns a one-liner when the connector is healthy.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-connector-error-recommendations",
+    "description": "Get suggested remediation steps for a connector that has failed or is in an error state. Recommendations are generated server-side from the connector's recent failure traces and configuration. Returns a one-liner when no recommendations are available.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-connector-logs",
+    "description": "Retrieve recent log entries for a Confluent Cloud connector from the Cloud logging API. Defaults to the last hour of ERROR-level entries with truncated stacktraces. Use connectorId (lcc-...) to narrow by resource ID. Organization ID auto-resolves from GET /org/v2/organizations when not provided. Paginated: when the response includes a nextPageToken, call again with pageToken=<that value> to retrieve the next page.",
+    "input_schema": {}
+  },
+  {
+    "name": "update-connector-config",
+    "description": "Update the configuration of an existing connector. Full-replace: omitted keys are removed and the connector is reconfigured (tasks restarted) with the supplied config. Returns the updated connector info.",
+    "input_schema": {}
+  },
+  {
+    "name": "pause-connector",
+    "description": "Pause a running connector and its tasks. Idempotent.",
+    "input_schema": {}
+  },
+  {
+    "name": "resume-connector",
+    "description": "Resume a paused connector and its tasks. Idempotent.",
+    "input_schema": {}
+  },
+  {
+    "name": "restart-connector",
+    "description": "Restart a connector and its tasks. Asynchronous; the connector will not transition state synchronously.",
+    "input_schema": {}
+  },
+  {
+    "name": "search-topics-by-tag",
+    "description": "List all topics in the Kafka cluster with the specified tag.",
+    "input_schema": {}
+  },
+  {
+    "name": "search-topics-by-name",
+    "description": "List all topics in the Kafka cluster matching the specified name.",
+    "input_schema": {}
+  },
+  {
+    "name": "create-topic-tags",
+    "description": "Create new tag definitions in Confluent Cloud.",
+    "input_schema": {}
+  },
+  {
+    "name": "delete-tag",
+    "description": "Delete a tag definition from Confluent Cloud.",
+    "input_schema": {}
+  },
+  {
+    "name": "remove-tag-from-entity",
+    "description": "Remove tag from an entity in Confluent Cloud.",
+    "input_schema": {}
+  },
+  {
+    "name": "add-tags-to-topic",
+    "description": "Assign existing tags to Kafka topics in Confluent Cloud.",
+    "input_schema": {}
+  },
+  {
+    "name": "list-tags",
+    "description": "Retrieve all tags with definitions from Confluent Cloud Schema Registry.",
+    "input_schema": {}
+  },
+  {
+    "name": "alter-topic-config",
+    "description": "Alter topic configuration in Confluent Cloud.",
+    "input_schema": {}
+  },
+  {
+    "name": "list-clusters",
+    "description": "Get all clusters in the Confluent Cloud environment",
+    "input_schema": {}
+  },
+  {
+    "name": "list-environments",
+    "description": "Get all environments in Confluent Cloud with pagination support",
+    "input_schema": {}
+  },
+  {
+    "name": "read-environment",
+    "description": "Get details of a specific environment by ID",
+    "input_schema": {}
+  },
+  {
+    "name": "list-schemas",
+    "description": "List all schemas in the Schema Registry.",
+    "input_schema": {}
+  },
+  {
+    "name": "create-schema",
+    "description": "Register a new schema (or a new version of an existing schema) under a subject in the Schema Registry.",
+    "input_schema": {}
+  },
+  {
+    "name": "delete-schema",
+    "description": "Delete a schema subject or a specific version from the Schema Registry. If version is omitted, all versions of the subject are deleted.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-topic-config",
+    "description": "Retrieve configuration details for a specific Kafka topic.",
+    "input_schema": {}
+  },
+  {
+    "name": "list-billing-costs",
+    "description": "Retrieve billing cost data for a Confluent Cloud organization within a specified date range with pagination support",
+    "input_schema": {}
+  },
+  {
+    "name": "query-metrics",
+    "description": "Query Confluent Cloud metrics from the Telemetry API. IMPORTANT: Use the list-available-metrics tool first to discover valid metric names and filter fields — do not guess them. Supports Kafka, Flink, Connectors, and Schema Registry metrics with flexible filtering, aggregation, and grouping.",
+    "input_schema": {}
+  },
+  {
+    "name": "list-available-metrics",
+    "description": "List available Confluent Cloud metrics and their filter fields from the Telemetry API. Use this tool BEFORE query-metrics to discover valid metric names, resource filter fields, and grouping labels. This avoids guessing metric names.",
+    "input_schema": {}
+  },
+  {
+    "name": "search-product-docs",
+    "description": "Search Confluent product documentation (docs.confluent.io, developer.confluent.io, support.confluent.io) by keyword.",
+    "input_schema": {}
+  },
+  {
+    "name": "get-product-doc-page",
+    "description": "Fetch the full markdown content of a Confluent product documentation page. Accepts URLs under https://docs.confluent.io/, https://developer.confluent.io/, or https://support.confluent.io/. Use this after search-product-docs to read a result's full content.",
+    "input_schema": {}
+  },
+  {
+    "name": "list-organizations",
+    "description": "List Confluent Cloud organizations the current credentials can see. Paginated; if the response includes a nextPageToken, pass it back as pageToken to fetch additional pages.",
+    "input_schema": {}
+  },
+  {
+    "name": "explain-disabled-tools",
+    "description": "Call when the user asks why a tool is missing or unavailable (e.g., \"why can't I list Kafka topics?\", \"where are the Flink tools?\"). Returns disabled tools organized per connection — each connection's gaps bucketed by the config piece each tool is waiting on, so you can tell the user the exact YAML block or field to add (and, with more than one connection, which connection needs it). Pass group_by=\"category\" to bucket each connection's gaps by functional area (kafka, flink, schema-registry, …) instead of by missing config piece. Prefer this over guessing about credentials, network, or auth.",
+    "input_schema": {}
+  },
+  {
+    "name": "list-configured-connections",
+    "description": "List every configured connection and the connection-routable tools you can invoke against each. The connection id (the map key) is the value to pass as the `connectionId` argument on tools that ask for one. Each connection also reports `readOnly`: when true, the connection is marked read-only and exposes only non-mutating tools. Connection-agnostic tools (e.g. docs and diagnostics that take no `connectionId`) are always available and appear in `tools/list`, not here. Call this when a tool offers a choice of connections, or to discover which connection supports the capability you need.",
+    "input_schema": {}
+  },
+  {
+    "name": "config-help",
+    "description": "Call when the user wants to enable or unlock a specific tool (e.g. \"how do I enable the tableflow tools?\", \"what config does create-flink-statement need?\", \"why isn't list-topics showing up — fix it\"). Given a tool name, returns a copy-pasteable YAML snippet, per connection, that closes the gap between the current config and what that tool requires. Suggests only — it never edits your config file. Prefer explain-disabled-tools when the question is \"what's off and why?\" across all tools; prefer this when the user has a target tool in mind and wants the exact YAML to add.",
+    "input_schema": {}
+  },
+  {
+    "name": "describe-configured-connection",
+    "description": "Describe one configured connection by id: its non-secret config (type, endpoints, resource ids — never credentials), whether it is read-only, the tools you can invoke against it, and, for tools that are unavailable on it, the config gap or policy keeping each one off. Pass the connection id from 'list-configured-connections'. Call this to learn what a specific connection supports before routing a tool call to it.",
+    "input_schema": {}
+  }
+]

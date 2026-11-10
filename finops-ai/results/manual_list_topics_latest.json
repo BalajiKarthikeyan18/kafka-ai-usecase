@@ -1,0 +1,7 @@
+{
+  "is_error": false,
+  "structured_content": null,
+  "content": [
+    "Kafka topics: mcp-test-topic,sample_data_orders,sample_data_orders_1,dev.sap.raw.tpc"
+  ]
+}
