@@ -1,0 +1,7 @@
+{
+  "is_error": false,
+  "structured_content": null,
+  "content": [
+    "1 connection configured:\n\n  default — \"Primary Confluent Cloud connection\" (43 tools): add-tags-to-topic, alter-topic-config, consume-messages, create-connector, create-schema, create-topic-tags, create-topics, delete-connector, delete-schema, delete-tag, delete-topics, describe-consumer-group, get-connector-config, get-connector-error-recommendations, get-connector-error-summary, get-connector-logs, get-connector-offsets, get-connector-status, get-connector-tasks, get-consumer-group-lag, get-partition-offsets, get-topic-config, list-available-metrics, list-billing-costs, list-clusters, list-compute-pools, list-connectors, list-consumer-groups, list-environments, list-organizations, list-schemas, list-tags, list-topics, pause-connector, produce-message, query-metrics, read-environment, remove-tag-from-entity, restart-connector, resume-connector, search-topics-by-name, search-topics-by-tag, update-connector-config"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "billing_total": 2.6728000000000005,
+  "matched_resource_total": 7.7157,
+  "unallocated_total": -7.7511,
+  "unmatched_resource_total": 2.7082,
+  "reconciliation_difference": 4.440892098500626e-16,
+  "record_count": 46
+}

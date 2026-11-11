@@ -1,0 +1,17 @@
+{
+  "env-rgk1k0": {
+    "resource_id": "env-rgk1k0",
+    "resource_type": "environment",
+    "display_name": ""
+  },
+  "lkc-125nwo6": {
+    "resource_id": "lkc-125nwo6",
+    "resource_type": "kafka_cluster",
+    "display_name": ""
+  },
+  "lcc-yokxw9p": {
+    "resource_id": "lcc-yokxw9p",
+    "resource_type": "connector",
+    "display_name": "sample_data"
+  }
+}

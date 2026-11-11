@@ -1,0 +1,5 @@
+Attribution,Resource type,Resource name,Resource ID,Product,Amount,Line_items,Line_types
+Matched by exact resource ID,connector,sample_data,lcc-yokxw9p,CONNECT,7.4332,14,"CONNECT_NUM_TASKS, CONNECT_THROUGHPUT"
+Billing resource ID not found in inventory,unmatched_resource,sample_data,lcc-12dd205,CONNECT,2.7082,4,CONNECT_NUM_TASKS
+Matched by exact resource ID,kafka_cluster,cluster_0,lkc-125nwo6,KAFKA,0.28250000000000003,17,"KAFKA_NETWORK_READ, KAFKA_NETWORK_WRITE, KAFKA_NUM_CKUS, KAFKA_STORAGE"
+Organization-level or unallocated,unallocated,Not specified,Not provided,UNKNOWN / NOT PROVIDED,-7.7511,11,PROMO_CREDIT

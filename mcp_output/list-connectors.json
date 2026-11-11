@@ -3,12 +3,12 @@
     "content": [
         {
             "type": "text",
-            "text": "MCP error -32602: Input validation error: Invalid arguments for tool list-connectors: Unrecognized key: \"name\"",
+            "text": "Active Connectors:\nsample_data",
             "annotations": null,
             "meta": null
         }
     ],
     "structured_content": null,
-    "is_error": true,
+    "is_error": false,
     "result_type": "complete"
 }

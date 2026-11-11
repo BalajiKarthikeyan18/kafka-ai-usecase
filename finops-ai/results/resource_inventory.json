@@ -1,158 +1,43 @@
 {
-  "discovered_at": "2026-11-10",
-  "resource_count": 4,
-  "resources": [
-    {
-      "resource_type": "environment",
-      "resource_id": "env-rgk1k0",
-      "resource_name": "default",
-      "environment_id": null,
-      "cluster_id": null,
-      "details": {
-        "name": "default",
-        "id": "env-rgk1k0",
-        "resource_name": "crn://confluent.cloud/organization=438d1a49-ef14-4b5e-aa5d-c837ea018e9c/environment=env-rgk1k0",
-        "created_at": "2026-09-17T08:54:26.870384Z",
-        "updated_at": "2026-09-17T08:54:26.870384Z",
-        "stream_governance_package": "ESSENTIALS"
-      }
+  "organizations": "Retrieved 1 organization:\n\nOrganization: Emergent\n  ID: 438d1a49-ef14-4b5e-aa5d-c837ea018e9c\n  Resource Name: crn://confluent.cloud/organization=438d1a49-ef14-4b5e-aa5d-c837ea018e9c\n  Created At: 2026-09-17T08:54:26.857277Z\n  Updated At: 2026-11-01T05:41:38.861579Z",
+  "environments": "Successfully retrieved 1 environments:\n\nEnvironment: default\n  ID: env-rgk1k0\n  Resource Name: crn://confluent.cloud/organization=438d1a49-ef14-4b5e-aa5d-c837ea018e9c/environment=env-rgk1k0\n  Created At: 2026-09-17T08:54:26.870384Z\n  Updated At: 2026-09-17T08:54:26.870384Z\n  Stream Governance Package: ESSENTIALS\n\n\nPagination:",
+  "clusters": "Successfully retrieved 1 clusters:\n\nCluster: cluster_0\n  ID: lkc-125nwo6\n  Environment ID: env-rgk1k0\n  Status: PROVISIONED\n  Availability: LOW\n  Cloud: GCP\n  Region: us-east1\n  CKU: 0\n  Endpoints:\n    HTTP: https://pkc-619z3.us-east1.gcp.confluent.cloud:443\n    Bootstrap: SASL_SSL://pkc-619z3.us-east1.gcp.confluent.cloud:9092\n  Config:\n    Kind: Basic\n    Zones:",
+  "discovered_environment_id": "env-rgk1k0",
+  "discovered_cluster_id": "lkc-125nwo6",
+  "environment_id_map": {
+    "env-rgk1k0": "default"
+  },
+  "cluster_id_map": {
+    "lkc-125nwo6": "cluster_0"
+  },
+  "topics": "Kafka topics: mcp-test-topic,sample_data_orders,sample_data_orders_1,dev.sap.raw.tpc",
+  "schemas": {
+    "sample_data_orders-value": {
+      "version": 1,
+      "id": 100001,
+      "schemaType": "JSON",
+      "schema": "{\"type\":\"object\",\"title\":\"ksql.orders\",\"properties\":{\"itemid\":{\"type\":\"string\",\"connect.index\":2},\"address\":{\"type\":\"object\",\"title\":\"ksql.address\",\"connect.index\":4,\"properties\":{\"zipcode\":{\"type\":\"integer\",\"connect.index\":2,\"connect.type\":\"int64\"},\"city\":{\"type\":\"string\",\"connect.index\":0},\"state\":{\"type\":\"string\",\"connect.index\":1}}},\"orderid\":{\"type\":\"integer\",\"connect.index\":1,\"connect.type\":\"int32\"},\"orderunits\":{\"type\":\"number\",\"connect.index\":3,\"connect.type\":\"float64\"},\"ordertime\":{\"type\":\"integer\",\"connect.index\":0,\"connect.type\":\"int64\"}}}"
     },
+    "sample_data_orders_1-value": {
+      "version": 1,
+      "id": 100001,
+      "schemaType": "JSON",
+      "schema": "{\"type\":\"object\",\"title\":\"ksql.orders\",\"properties\":{\"itemid\":{\"type\":\"string\",\"connect.index\":2},\"address\":{\"type\":\"object\",\"title\":\"ksql.address\",\"connect.index\":4,\"properties\":{\"zipcode\":{\"type\":\"integer\",\"connect.index\":2,\"connect.type\":\"int64\"},\"city\":{\"type\":\"string\",\"connect.index\":0},\"state\":{\"type\":\"string\",\"connect.index\":1}}},\"orderid\":{\"type\":\"integer\",\"connect.index\":1,\"connect.type\":\"int32\"},\"orderunits\":{\"type\":\"number\",\"connect.index\":3,\"connect.type\":\"float64\"},\"ordertime\":{\"type\":\"integer\",\"connect.index\":0,\"connect.type\":\"int64\"}}}"
+    }
+  },
+  "compute_pools": "Successfully retrieved 1 compute pools:\n\nCompute Pool: GCP.us-east1.env-rgk1k0.3839\n  ID: lfcp-rrvr3g7\n  Cloud: GCP\n  Region: us-east1",
+  "connectors": "Active Connectors:\nsample_data",
+  "connector_resources": [
     {
-      "resource_type": "kafka_cluster",
-      "resource_id": null,
-      "resource_name": null,
-      "environment_id": null,
-      "cluster_id": null,
-      "details": {
-        "total_environments": 1,
-        "total_clusters": 1,
-        "cluster_results": [
-          {
-            "environment_name": "default",
-            "environment_id": "env-rgk1k0",
-            "total_clusters": 1,
-            "clusters": [
-              {
-                "cluster_name": "cluster_0",
-                "cluster_id": "lkc-125nwo6",
-                "environment_name": "default",
-                "environment_id": "env-rgk1k0",
-                "status": "PROVISIONED",
-                "availability": "LOW",
-                "cloud": "GCP",
-                "region": "us-east1",
-                "cku": 0,
-                "kind": "Basic",
-                "zones": "",
-                "endpoints": {
-                  "http": "https://pkc-619z3.us-east1.gcp.confluent.cloud:443",
-                  "bootstrap": "SASL_SSL://pkc-619z3.us-east1.gcp.confluent.cloud:9092"
-                }
-              }
-            ],
-            "raw_response": [
-              "Successfully retrieved 1 clusters:\n\nCluster: cluster_0\n  ID: lkc-125nwo6\n  Environment ID: env-rgk1k0\n  Status: PROVISIONED\n  Availability: LOW\n  Cloud: GCP\n  Region: us-east1\n  CKU: 0\n  Endpoints:\n    HTTP: https://pkc-619z3.us-east1.gcp.confluent.cloud:443\n    Bootstrap: SASL_SSL://pkc-619z3.us-east1.gcp.confluent.cloud:9092\n  Config:\n    Kind: Basic\n    Zones: \n"
-            ]
-          }
-        ]
-      }
-    },
-    {
-      "resource_type": "schema_subject",
-      "resource_id": null,
-      "resource_name": null,
-      "environment_id": "env-rgk1k0",
-      "cluster_id": null,
-      "details": {
-        "sample_data_orders-value": {
-          "version": 1,
-          "id": 100001,
-          "schemaType": "JSON",
-          "schema": "{\"type\":\"object\",\"title\":\"ksql.orders\",\"properties\":{\"itemid\":{\"type\":\"string\",\"connect.index\":2},\"address\":{\"type\":\"object\",\"title\":\"ksql.address\",\"connect.index\":4,\"properties\":{\"zipcode\":{\"type\":\"integer\",\"connect.index\":2,\"connect.type\":\"int64\"},\"city\":{\"type\":\"string\",\"connect.index\":0},\"state\":{\"type\":\"string\",\"connect.index\":1}}},\"orderid\":{\"type\":\"integer\",\"connect.index\":1,\"connect.type\":\"int32\"},\"orderunits\":{\"type\":\"number\",\"connect.index\":3,\"connect.type\":\"float64\"},\"ordertime\":{\"type\":\"integer\",\"connect.index\":0,\"connect.type\":\"int64\"}}}"
-        },
-        "sample_data_orders_1-value": {
-          "version": 1,
-          "id": 100001,
-          "schemaType": "JSON",
-          "schema": "{\"type\":\"object\",\"title\":\"ksql.orders\",\"properties\":{\"itemid\":{\"type\":\"string\",\"connect.index\":2},\"address\":{\"type\":\"object\",\"title\":\"ksql.address\",\"connect.index\":4,\"properties\":{\"zipcode\":{\"type\":\"integer\",\"connect.index\":2,\"connect.type\":\"int64\"},\"city\":{\"type\":\"string\",\"connect.index\":0},\"state\":{\"type\":\"string\",\"connect.index\":1}}},\"orderid\":{\"type\":\"integer\",\"connect.index\":1,\"connect.type\":\"int32\"},\"orderunits\":{\"type\":\"number\",\"connect.index\":3,\"connect.type\":\"float64\"},\"ordertime\":{\"type\":\"integer\",\"connect.index\":0,\"connect.type\":\"int64\"}}}"
-        }
-      }
-    },
-    {
-      "resource_type": "flink_compute_pool",
-      "resource_id": null,
-      "resource_name": "GCP.us-east1.env-rgk1k0.3839",
-      "environment_id": "env-rgk1k0",
-      "cluster_id": null,
-      "details": {
-        "name": "GCP.us-east1.env-rgk1k0.3839"
-      }
+      "name": "sample_data",
+      "id": "lcc-yokxw9p",
+      "resource_type": "connector",
+      "status": null,
+      "info": null,
+      "extensions": {}
     }
   ],
-  "tool_calls": [
-    {
-      "tool": "list-organizations",
-      "arguments_context": {},
-      "is_error": false,
-      "content": [
-        "Retrieved 1 organization:\n\nOrganization: Emergent\n  ID: 438d1a49-ef14-4b5e-aa5d-c837ea018e9c\n  Resource Name: crn://confluent.cloud/organization=438d1a49-ef14-4b5e-aa5d-c837ea018e9c\n  Created At: 2026-09-17T08:54:26.857277Z\n  Updated At: 2026-11-01T05:41:38.861579Z\n"
-      ],
-      "structured_content": null
-    },
-    {
-      "tool": "list-environments",
-      "arguments_context": {},
-      "is_error": false,
-      "content": [
-        "Successfully retrieved 1 environments:\n\nEnvironment: default\n  ID: env-rgk1k0\n  Resource Name: crn://confluent.cloud/organization=438d1a49-ef14-4b5e-aa5d-c837ea018e9c/environment=env-rgk1k0\n  Created At: 2026-09-17T08:54:26.870384Z\n  Updated At: 2026-09-17T08:54:26.870384Z\n  Stream Governance Package: ESSENTIALS\n\n\nPagination:\n"
-      ],
-      "structured_content": null
-    },
-    {
-      "tool": "list-clusters",
-      "arguments_context": {},
-      "is_error": false,
-      "content": [
-        "Successfully retrieved 1 clusters:\n\nCluster: cluster_0\n  ID: lkc-125nwo6\n  Environment ID: env-rgk1k0\n  Status: PROVISIONED\n  Availability: LOW\n  Cloud: GCP\n  Region: us-east1\n  CKU: 0\n  Endpoints:\n    HTTP: https://pkc-619z3.us-east1.gcp.confluent.cloud:443\n    Bootstrap: SASL_SSL://pkc-619z3.us-east1.gcp.confluent.cloud:9092\n  Config:\n    Kind: Basic\n    Zones: \n"
-      ],
-      "structured_content": null
-    },
-    {
-      "tool": "list-connectors",
-      "arguments_context": {
-        "environment_id": "env-rgk1k0",
-        "env_id": "env-rgk1k0"
-      },
-      "is_error": false,
-      "content": [
-        "Active Connectors:\nsample_data"
-      ],
-      "structured_content": null
-    },
-    {
-      "tool": "list-schemas",
-      "arguments_context": {
-        "environment_id": "env-rgk1k0",
-        "env_id": "env-rgk1k0"
-      },
-      "is_error": false,
-      "content": [
-        "{\"sample_data_orders-value\":{\"version\":1,\"id\":100001,\"schemaType\":\"JSON\",\"schema\":\"{\\\"type\\\":\\\"object\\\",\\\"title\\\":\\\"ksql.orders\\\",\\\"properties\\\":{\\\"itemid\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":2},\\\"address\\\":{\\\"type\\\":\\\"object\\\",\\\"title\\\":\\\"ksql.address\\\",\\\"connect.index\\\":4,\\\"properties\\\":{\\\"zipcode\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":2,\\\"connect.type\\\":\\\"int64\\\"},\\\"city\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":0},\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":1}}},\\\"orderid\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":1,\\\"connect.type\\\":\\\"int32\\\"},\\\"orderunits\\\":{\\\"type\\\":\\\"number\\\",\\\"connect.index\\\":3,\\\"connect.type\\\":\\\"float64\\\"},\\\"ordertime\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":0,\\\"connect.type\\\":\\\"int64\\\"}}}\"},\"sample_data_orders_1-value\":{\"version\":1,\"id\":100001,\"schemaType\":\"JSON\",\"schema\":\"{\\\"type\\\":\\\"object\\\",\\\"title\\\":\\\"ksql.orders\\\",\\\"properties\\\":{\\\"itemid\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":2},\\\"address\\\":{\\\"type\\\":\\\"object\\\",\\\"title\\\":\\\"ksql.address\\\",\\\"connect.index\\\":4,\\\"properties\\\":{\\\"zipcode\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":2,\\\"connect.type\\\":\\\"int64\\\"},\\\"city\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":0},\\\"state\\\":{\\\"type\\\":\\\"string\\\",\\\"connect.index\\\":1}}},\\\"orderid\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":1,\\\"connect.type\\\":\\\"int32\\\"},\\\"orderunits\\\":{\\\"type\\\":\\\"number\\\",\\\"connect.index\\\":3,\\\"connect.type\\\":\\\"float64\\\"},\\\"ordertime\\\":{\\\"type\\\":\\\"integer\\\",\\\"connect.index\\\":0,\\\"connect.type\\\":\\\"int64\\\"}}}\"}}"
-      ],
-      "structured_content": null
-    },
-    {
-      "tool": "list-compute-pools",
-      "arguments_context": {
-        "environment_id": "env-rgk1k0",
-        "env_id": "env-rgk1k0"
-      },
-      "is_error": false,
-      "content": [
-        "Successfully retrieved 1 compute pools:\n\nCompute Pool: GCP.us-east1.env-rgk1k0.3839\n  ID: lfcp-rrvr3g7\n  Cloud: GCP\n  Region: us-east1\n"
-      ],
-      "structured_content": null
-    }
-  ],
-  "failures": []
+  "connector_configs": {
+    "sample_data": "Connector Config for sample_data: {\"cloud.environment\":\"prod\",\"cloud.provider\":\"gcp\",\"connector.class\":\"DatagenSource\",\"kafka.auth.mode\":\"SERVICE_ACCOUNT\",\"kafka.endpoint\":\"SASL_SSL://pkc-619z3.us-east1.gcp.confluent.cloud:9092\",\"kafka.region\":\"us-east1\",\"kafka.service.account.id\":\"sa-mkwm0o1\",\"kafka.topic\":\"sample_data_orders_1\",\"name\":\"sample_data\",\"output.data.format\":\"JSON_SR\",\"quickstart\":\"ORDERS\",\"tasks.max\":\"1\"}"
+  }
 }

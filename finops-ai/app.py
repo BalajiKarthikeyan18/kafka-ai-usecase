@@ -1,1189 +1,1723 @@
+
 import asyncio
 import base64
 import json
 import os
 import re
+from contextlib import asynccontextmanager
 from datetime import date, timedelta
 from pathlib import Path
-from typing import Any
+from urllib.parse import parse_qs, urlparse
 
 import pandas as pd
 import requests
 import streamlit as st
 from dotenv import load_dotenv
-
-from mcp_client import get_mcp_session
+from mcp import ClientSession, StdioServerParameters
+from mcp.client.stdio import stdio_client
 
 
 # ============================================================
 # CONFIGURATION
 # ============================================================
 
-PROJECT_DIR = Path(__file__).resolve().parent
-PARENT_DIR = PROJECT_DIR.parent
-RESULTS_DIR = PROJECT_DIR / "results"
-LOCAL_ENV_FILE = PROJECT_DIR / ".env"
-PARENT_ENV_FILE = PARENT_DIR / ".env"
-CONFIG_PATH = PARENT_DIR / "config.yaml"
+APP_DIR = Path(__file__).resolve().parent
+PARENT_DIR = APP_DIR.parent
 
-BILLING_API_URL = "https://api.confluent.cloud/billing/v1/costs"
-DEFAULT_PAGE_SIZE = 1000
-MAX_BILLING_RANGE_DAYS = 31
-REQUEST_TIMEOUT = 60
+MCP_CONFIG_PATH = PARENT_DIR / "config.yaml"
+PARENT_ENV_PATH = PARENT_DIR / ".env"
+PROJECT_ENV_PATH = APP_DIR / ".env"
 
-RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-load_dotenv(PARENT_ENV_FILE, override=False)
-load_dotenv(LOCAL_ENV_FILE, override=False)
+RESULTS_DIR = APP_DIR / "results"
 
-st.set_page_config(
-    page_title="Confluent FinOps Explorer",
-    page_icon="",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
-
-st.title("Confluent FinOps Explorer")
-st.caption(
-    "Organization-wide Confluent Cloud resource discovery, billing retrieval, "
-    "resource correlation and usage visibility."
-)
+BILLING_API = "https://api.confluent.cloud/billing/v1/costs"
+CONNECT_API = "https://api.confluent.cloud/connect/v1"
+PAGE_SIZE = 1000
 
 
 # ============================================================
-# MCP TOOL DISCOVERY
+# ENVIRONMENT
 # ============================================================
 
-DISCOVERY_TOOL_NAMES = [
-    "list-organizations",
-    "list-environments",
-    "list-clusters",
-    "list-topics",
-    "get-topic-config",
-    "list-connectors",
-    "get-connector-config",
-    "get-connector-status",
-    "list-schemas",
-    "list-compute-pools",
-    "list-consumer-groups",
-    "list-tags",
-    "list-available-metrics",
-    "query-metrics",
-]
+def load_environment():
+    if PARENT_ENV_PATH.exists():
+        load_dotenv(PARENT_ENV_PATH, override=False)
 
-READ_ONLY_TOOLS = DISCOVERY_TOOL_NAMES + [
-    "read-environment",
-    "get-connector-offsets",
-    "get-connector-tasks",
-    "get-connector-error-summary",
-    "get-connector-error-recommendations",
-    "get-connector-logs",
-    "describe-consumer-group",
-    "get-consumer-group-lag",
-    "get-partition-offsets",
-    "search-topics-by-name",
-    "search-topics-by-tag",
-    "list-configured-connections",
-    "describe-configured-connection",
-    "explain-disabled-tools",
-    "config-help",
-]
-
-TOOL_DESCRIPTIONS = {
-    "list-organizations": "Discover Confluent organizations.",
-    "list-environments": "Discover environments.",
-    "list-clusters": "Discover Kafka clusters.",
-    "list-topics": "Discover topics in a Kafka cluster.",
-    "get-topic-config": "Retrieve a topic configuration.",
-    "list-connectors": "Discover connectors.",
-    "get-connector-config": "Retrieve connector configuration.",
-    "get-connector-status": "Retrieve connector status.",
-    "list-schemas": "Discover Schema Registry subjects and schemas.",
-    "list-compute-pools": "Discover Flink compute pools.",
-    "list-consumer-groups": "Discover consumer groups.",
-    "list-tags": "Discover available tags.",
-    "list-available-metrics": "Discover queryable telemetry metrics.",
-    "query-metrics": "Query Confluent Cloud usage metrics.",
-}
+    if PROJECT_ENV_PATH.exists():
+        load_dotenv(PROJECT_ENV_PATH, override=False)
 
 
-def extract_mcp_result(result: Any) -> dict:
-    output = {
-        "is_error": bool(getattr(result, "isError", False)),
-        "structured_content": getattr(result, "structuredContent", None),
-        "content": [],
-    }
-    for item in getattr(result, "content", []):
-        output["content"].append(
-            item.text if hasattr(item, "text") else str(item)
+def get_required_env(name):
+    value = os.getenv(name, "").strip()
+
+    if not value:
+        raise RuntimeError(
+            f"Missing environment variable: {name}"
         )
-    return output
+
+    return value
 
 
-async def get_mcp_tools() -> list[dict]:
-    async with get_mcp_session() as session:
-        response = await session.list_tools()
-        return [
-            {
-                "name": tool.name,
-                "description": tool.description or "",
-                "input_schema": getattr(tool, "inputSchema", {}) or {},
-            }
-            for tool in response.tools
-        ]
+def get_api_auth():
+    load_environment()
+
+    api_key = get_required_env("CONFLUENT_CLOUD_API_KEY")
+    api_secret = get_required_env("CONFLUENT_CLOUD_API_SECRET")
+
+    encoded = base64.b64encode(
+        f"{api_key}:{api_secret}".encode("utf-8")
+    ).decode("utf-8")
+
+    return f"Basic {encoded}"
 
 
-async def execute_mcp_tool(tool_name: str, arguments: dict) -> dict:
-    async with get_mcp_session() as session:
-        result = await session.call_tool(tool_name, arguments=arguments)
-        return extract_mcp_result(result)
+def save_json(filename, data):
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
-
-def run_async(coroutine):
-    try:
-        return asyncio.run(coroutine)
-    except Exception as exc:
-        raise RuntimeError(str(exc)) from exc
-
-
-def save_json(filename: str, data: Any) -> Path:
     path = RESULTS_DIR / filename
-    with path.open("w", encoding="utf-8") as handle:
-        json.dump(data, handle, indent=2, ensure_ascii=False, default=str)
+
+    path.write_text(
+        json.dumps(data, indent=2, ensure_ascii=False, default=str),
+        encoding="utf-8"
+    )
+
     return path
 
 
-def result_text(result: dict) -> str:
-    return "\n".join(result.get("content") or [])
+# ============================================================
+# MCP CONNECTION
+# ============================================================
+
+@asynccontextmanager
+async def get_mcp_session():
+
+    if not MCP_CONFIG_PATH.exists():
+        raise FileNotFoundError(
+            f"MCP configuration not found: {MCP_CONFIG_PATH}"
+        )
+
+    load_environment()
+
+    params = StdioServerParameters(
+        command="cmd.exe",
+        args=[
+            "/c",
+            "npx",
+            "-y",
+            "@confluentinc/mcp-confluent",
+            "--config",
+            str(MCP_CONFIG_PATH)
+        ],
+        env=os.environ.copy(),
+        cwd=str(PARENT_DIR)
+    )
+
+    async with stdio_client(
+        params,
+        errlog=None
+    ) as (read, write):
+
+        async with ClientSession(read, write) as session:
+            await session.initialize()
+            yield session
 
 
-def combined_result_payload(result: dict) -> Any:
-    structured = result.get("structured_content")
-    if structured not in (None, {}, []):
+# ============================================================
+# MCP RESPONSE HANDLING
+# ============================================================
+
+def mcp_result_to_python(result):
+
+    structured = getattr(
+        result,
+        "structuredContent",
+        None
+    )
+
+    if structured is None:
+        structured = getattr(
+            result,
+            "structured_content",
+            None
+        )
+
+    if structured is not None:
         return structured
-    return result_text(result)
+
+    output = []
+
+    for item in getattr(result, "content", []) or []:
+
+        text_value = getattr(item, "text", None)
+
+        if not text_value:
+            continue
+
+        stripped = text_value.strip()
+
+        try:
+            output.append(json.loads(stripped))
+        except json.JSONDecodeError:
+            output.append(stripped)
+
+    if len(output) == 1:
+        return output[0]
+
+    return output
 
 
-def schema_properties(tool: dict) -> tuple[dict, list]:
-    schema = tool.get("input_schema") or {}
-    return schema.get("properties", {}) or {}, schema.get("required", []) or []
+async def call_mcp_tool(session, tool_name, arguments=None):
 
+    result = await session.call_tool(
+        tool_name,
+        arguments or {}
+    )
 
-def infer_argument_value(name: str, context: dict) -> Any:
-    """Best-effort mapping for common Confluent MCP argument names."""
-    key = name.lower()
-    aliases = {
-        "environment_id": ["environment_id", "env_id", "environment"],
-        "env_id": ["env_id", "environment_id", "environment"],
-        "cluster_id": ["cluster_id", "kafka_cluster_id", "cluster"],
-        "kafka_cluster_id": ["kafka_cluster_id", "cluster_id", "cluster"],
-        "topic_name": ["topic_name", "topic"],
-        "topic": ["topic", "topic_name"],
-        "connector_name": ["connector_name", "name", "connector"],
-        "name": ["name", "connector_name", "topic_name"],
-        "compute_pool_id": ["compute_pool_id", "pool_id"],
-        "subject": ["subject", "subject_name"],
-    }
-    for candidate in aliases.get(key, [key]):
-        if candidate in context and context[candidate] not in (None, ""):
-            return context[candidate]
-    return None
+    if (
+        getattr(result, "isError", False)
+        or getattr(result, "is_error", False)
+    ):
+        raise RuntimeError(
+            str(mcp_result_to_python(result))
+        )
 
-
-def build_arguments(tool: dict, context: dict | None = None) -> tuple[dict, list]:
-    context = context or {}
-    properties, required = schema_properties(tool)
-    arguments = {}
-    unresolved = []
-    for name, spec in properties.items():
-        value = infer_argument_value(name, context)
-        if value is not None:
-            arguments[name] = value
-        elif name in required:
-            unresolved.append(name)
-        elif "default" in spec:
-            arguments[name] = spec["default"]
-    return arguments, unresolved
-
-
-def call_discovery_tool(
-    tool_map: dict,
-    tool_name: str,
-    context: dict | None = None,
-) -> dict:
-    if tool_name not in tool_map:
-        return {
-            "is_error": True,
-            "content": [f"Tool is not available in this MCP server: {tool_name}"],
-            "structured_content": None,
-        }
-
-    tool = tool_map[tool_name]
-    arguments, unresolved = build_arguments(tool, context)
-    if unresolved:
-        return {
-            "is_error": True,
-            "content": [
-                "Required arguments could not be inferred: "
-                + ", ".join(unresolved)
-            ],
-            "structured_content": None,
-        }
-
-    try:
-        return run_async(execute_mcp_tool(tool_name, arguments))
-    except Exception as exc:
-        return {
-            "is_error": True,
-            "content": [str(exc)],
-            "structured_content": None,
-        }
+    return mcp_result_to_python(result)
 
 
 # ============================================================
-# RESOURCE RESPONSE NORMALIZATION
+# RESOURCE EXTRACTION
 # ============================================================
 
-def walk_objects(value: Any):
-    if isinstance(value, dict):
-        yield value
-        for child in value.values():
-            yield from walk_objects(child)
-    elif isinstance(value, list):
-        for child in value:
-            yield from walk_objects(child)
+def find_ids(payload, pattern):
+
+    found = set()
+
+    def walk(value):
+
+        if isinstance(value, dict):
+            for key, item in value.items():
+                if isinstance(item, str):
+                    if re.fullmatch(pattern, item):
+                        found.add(item)
+                walk(item)
+
+        elif isinstance(value, list):
+            for item in value:
+                walk(item)
+
+        elif isinstance(value, str):
+            found.update(re.findall(pattern, value))
+
+    walk(payload)
+
+    return sorted(found)
 
 
-def find_value(obj: dict, names: list[str]):
-    lowered = {str(k).lower(): v for k, v in obj.items()}
-    for name in names:
-        value = lowered.get(name.lower())
-        if value not in (None, ""):
-            return value
-    return None
+def find_environment_ids(payload):
+    return find_ids(
+        payload,
+        r"env-[A-Za-z0-9_-]+"
+    )
 
 
-def extract_resource_objects(payload: Any) -> list[dict]:
-    """Extract object records from MCP structured or textual responses."""
+def find_cluster_ids(payload):
+    return find_ids(
+        payload,
+        r"lkc-[A-Za-z0-9_-]+"
+    )
+
+
+def extract_named_resources(payload, label):
+
+    results = {}
+
     if isinstance(payload, dict):
-        candidates = []
-        for key in (
-            "data", "items", "results", "environments", "clusters",
-            "topics", "connectors", "schemas", "subjects", "compute_pools",
-            "consumer_groups", "organizations",
-        ):
-            value = payload.get(key)
-            if isinstance(value, list):
-                candidates.extend(x for x in value if isinstance(x, dict))
-        if candidates:
-            return candidates
-        return [payload]
+
+        for key, value in payload.items():
+            results.update(
+                extract_named_resources(value, label)
+            )
+
+        return results
 
     if isinstance(payload, list):
-        return [x for x in payload if isinstance(x, dict)]
+
+        for value in payload:
+            results.update(
+                extract_named_resources(value, label)
+            )
+
+        return results
 
     if not isinstance(payload, str):
-        return []
+        return results
 
-    text = payload.strip()
-    # Some MCP tools return JSON embedded in a text block.
-    decoder = json.JSONDecoder()
-    for index, char in enumerate(text):
-        if char not in "[{":
-            continue
-        try:
-            parsed, _ = decoder.raw_decode(text[index:])
-            found = extract_resource_objects(parsed)
-            if found:
-                return found
-        except json.JSONDecodeError:
-            continue
+    # Example:
+    # Cluster: cluster_0
+    # ID: lkc-125nwo6
 
-    # Fallback for the known plain-text list-connectors/list-compute-pools output.
-    records = []
-    for line in text.splitlines():
-        line = line.strip()
-        if line.startswith("Connector:"):
-            records.append({"name": line.split(":", 1)[1].strip()})
-        elif line.startswith("Compute Pool:"):
-            records.append({"name": line.split(":", 1)[1].strip()})
-    return records
-
-
-def normalize_resource(
-    resource_type: str,
-    item: dict,
-    environment_id: str | None = None,
-    cluster_id: str | None = None,
-) -> dict:
-    resource_id = find_value(
-        item,
-        ["id", "resource_id", "cluster_id", "topic_id", "connector_id",
-         "compute_pool_id", "subject_id", "link_id"],
+    pattern = (
+        rf"{label}:\s*([^\r\n]+)"
+        rf"[\r\n]+\s*ID:\s*"
+        rf"({ 'lkc-[A-Za-z0-9_-]+' if label == 'Cluster' else 'env-[A-Za-z0-9_-]+' })"
     )
-    name = find_value(
-        item,
-        ["name", "display_name", "topic_name", "connector_name",
-         "subject", "subject_name", "cluster_name"],
-    )
-    resource_environment = item.get("environment") or {}
-    if isinstance(resource_environment, dict):
-        environment_id = (
-            resource_environment.get("id")
-            or item.get("environment_id")
-            or environment_id
+
+    for match in re.finditer(
+        pattern,
+        payload,
+        re.IGNORECASE
+    ):
+        name = match.group(1).strip()
+        resource_id = match.group(2).strip()
+
+        results[resource_id] = name
+
+    return results
+
+
+def extract_connector_names(payload):
+
+    names = set()
+
+    if isinstance(payload, dict):
+
+        for key in ("name", "connector_name", "connectorName"):
+            value = payload.get(key)
+
+            if isinstance(value, str):
+                names.add(value)
+
+        for value in payload.values():
+            names.update(extract_connector_names(value))
+
+    elif isinstance(payload, list):
+
+        for value in payload:
+            names.update(extract_connector_names(value))
+
+    elif isinstance(payload, str):
+
+        match = re.search(
+            r"Active Connectors:\s*(.*)",
+            payload,
+            re.IGNORECASE | re.DOTALL
         )
-    else:
-        environment_id = item.get("environment_id") or environment_id
 
-    return {
-        "resource_type": resource_type,
-        "resource_id": str(resource_id) if resource_id else None,
-        "resource_name": str(name) if name else None,
-        "environment_id": environment_id,
-        "cluster_id": item.get("cluster_id") or cluster_id,
-        "details": item,
-    }
+        if match:
+
+            content = match.group(1)
+
+            for name in re.split(r"[\s,]+", content.strip()):
+
+                name = name.strip()
+
+                if re.fullmatch(
+                    r"[A-Za-z0-9_.-]+",
+                    name
+                ):
+                    names.add(name)
+
+    return sorted(names)
 
 
-def resource_key(resource: dict) -> tuple:
-    return (
-        resource.get("resource_type"),
-        resource.get("resource_id"),
-        resource.get("resource_name"),
-        resource.get("environment_id"),
-        resource.get("cluster_id"),
+# ============================================================
+# CONFLUENT CONNECT REST API
+# ============================================================
+
+def fetch_connector_inventory(environment_id, cluster_id):
+
+    if not environment_id or not cluster_id:
+        raise RuntimeError(
+            "Environment ID and Kafka cluster ID are required "
+            "to retrieve connector IDs."
+        )
+
+    url = (
+        f"{CONNECT_API}/environments/{environment_id}"
+        f"/clusters/{cluster_id}/connectors"
     )
 
+    response = requests.get(
+        url,
+        headers={
+            "Authorization": get_api_auth(),
+            "Accept": "application/json"
+        },
+        params={"expand": "id"},
+        timeout=60
+    )
 
-def discover_organization_resources(tool_map: dict) -> dict:
-    """Discover organization resources through read-only MCP tools."""
-    resources = []
-    calls = []
-    failures = []
+    if not response.ok:
+        raise RuntimeError(
+            f"Connect API HTTP {response.status_code}: "
+            f"{response.text[:2000]}"
+        )
 
-    def invoke(tool_name: str, context: dict | None = None):
-        result = call_discovery_tool(tool_map, tool_name, context)
-        calls.append({
-            "tool": tool_name,
-            "arguments_context": context or {},
-            "is_error": result.get("is_error", False),
-            "content": result.get("content", []),
-            "structured_content": result.get("structured_content"),
+    payload = response.json()
+
+    if not isinstance(payload, dict):
+        raise RuntimeError(
+            "Unexpected connector API response format."
+        )
+
+    connectors = []
+
+    for connector_name, details in payload.items():
+
+        if not isinstance(details, dict):
+            continue
+
+        id_details = details.get("id") or {}
+
+        connector_id = None
+
+        if isinstance(id_details, dict):
+            connector_id = id_details.get("id")
+
+        elif isinstance(id_details, str):
+            connector_id = id_details
+
+        connectors.append({
+            "name": connector_name,
+            "id": connector_id,
+            "resource_type": "connector",
+            "status": details.get("status"),
+            "info": details.get("info"),
+            "extensions": details.get("extensions")
         })
-        if result.get("is_error"):
-            failures.append({
-                "tool": tool_name,
-                "context": context or {},
-                "error": result_text(result),
-            })
-        return result
 
-    def add(tool_name: str, resource_type: str, context=None,
-            environment_id=None, cluster_id=None):
-        result = invoke(tool_name, context)
-        if result.get("is_error"):
-            return []
-        payload = combined_result_payload(result)
-        items = extract_resource_objects(payload)
-        normalized = [
-            normalize_resource(resource_type, item, environment_id, cluster_id)
-            for item in items
+    return connectors
+
+
+# ============================================================
+# RESOURCE DISCOVERY
+# ============================================================
+
+async def discover_resources():
+
+    inventory = {}
+    errors = []
+
+    async with get_mcp_session() as session:
+
+        # ----------------------------------------------------
+        # Base discovery
+        # ----------------------------------------------------
+
+        base_calls = [
+            ("organizations", "list-organizations", {}),
+            ("environments", "list-environments", {}),
+            ("clusters", "list-clusters", {})
         ]
-        resources.extend(normalized)
-        return normalized
 
-    # Organization and environment discovery.
-    add("list-organizations", "organization")
-    environments = add("list-environments", "environment")
+        for key, tool, arguments in base_calls:
 
-    # If the tool returns text and the generic parser could not extract IDs,
-    # preserve the raw result and continue with the known environment context
-    # from the session's previously saved inventory, if available.
-    saved_env_file = RESULTS_DIR / "environments.json"
-    if not any(r["resource_type"] == "environment" for r in resources):
-        if saved_env_file.exists():
             try:
-                old = json.loads(saved_env_file.read_text(encoding="utf-8"))
-                for item in extract_resource_objects(old):
-                    resources.append(normalize_resource("environment", item))
-            except Exception:
-                pass
+                inventory[key] = await call_mcp_tool(
+                    session,
+                    tool,
+                    arguments
+                )
 
-    env_resources = [r for r in resources if r["resource_type"] == "environment"]
-    env_ids = sorted({
-        r["resource_id"] for r in env_resources if r.get("resource_id")
-    })
+            except Exception as exc:
 
-    # Discover clusters; the MCP list-clusters tool may be organization-wide.
-    clusters = add("list-clusters", "kafka_cluster")
-    cluster_resources = [r for r in resources if r["resource_type"] == "kafka_cluster"]
+                inventory[key] = None
 
-    # Recover cluster IDs from the existing discovery output if the current
-    # server response is text-only and cannot be normalized.
-    saved_cluster_file = RESULTS_DIR / "clusters.json"
-    if not cluster_resources and saved_cluster_file.exists():
+                errors.append({
+                    "resource": key,
+                    "error": str(exc)
+                })
+
+        # ----------------------------------------------------
+        # Extract environment and cluster IDs
+        # ----------------------------------------------------
+
+        environment_ids = find_environment_ids(
+            inventory.get("environments")
+        )
+
+        cluster_ids = find_cluster_ids(
+            inventory.get("clusters")
+        )
+
+        environment_id = (
+            environment_ids[0]
+            if environment_ids
+            else None
+        )
+
+        cluster_id = (
+            cluster_ids[0]
+            if cluster_ids
+            else None
+        )
+
+        inventory["discovered_environment_id"] = environment_id
+        inventory["discovered_cluster_id"] = cluster_id
+
+        # ----------------------------------------------------
+        # Environment and cluster name-to-ID mappings
+        # ----------------------------------------------------
+
+        inventory["environment_id_map"] = extract_named_resources(
+            inventory.get("environments"),
+            "Environment"
+        )
+
+        inventory["cluster_id_map"] = extract_named_resources(
+            inventory.get("clusters"),
+            "Cluster"
+        )
+
+        # ----------------------------------------------------
+        # Other MCP resource discovery
+        # ----------------------------------------------------
+
+        resource_calls = [
+            ("topics", "list-topics", {}),
+            ("schemas", "list-schemas", {}),
+            ("compute_pools", "list-compute-pools", {})
+        ]
+
+        for key, tool, arguments in resource_calls:
+
+            try:
+                inventory[key] = await call_mcp_tool(
+                    session,
+                    tool,
+                    arguments
+                )
+
+            except Exception as exc:
+
+                inventory[key] = None
+
+                errors.append({
+                    "resource": key,
+                    "error": str(exc)
+                })
+
+        # ----------------------------------------------------
+        # Connector names through MCP
+        # ----------------------------------------------------
+
+        connector_arguments = {}
+
+        if environment_id:
+            connector_arguments["environmentId"] = environment_id
+
+        if cluster_id:
+            connector_arguments["clusterId"] = cluster_id
+
         try:
-            old = json.loads(saved_cluster_file.read_text(encoding="utf-8"))
-            for item in extract_resource_objects(old):
-                resources.append(normalize_resource("kafka_cluster", item))
-            cluster_resources = [
-                r for r in resources if r["resource_type"] == "kafka_cluster"
-            ]
-        except Exception:
+
+            inventory["connectors"] = await call_mcp_tool(
+                session,
+                "list-connectors",
+                connector_arguments
+            )
+
+        except Exception as exc:
+
+            inventory["connectors"] = None
+
+            errors.append({
+                "resource": "connectors",
+                "error": str(exc)
+            })
+
+        # ----------------------------------------------------
+        # Connector IDs through Connect REST API
+        # ----------------------------------------------------
+
+        try:
+
+            connector_resources = fetch_connector_inventory(
+                environment_id,
+                cluster_id
+            )
+
+            inventory["connector_resources"] = connector_resources
+
+        except Exception as exc:
+
+            inventory["connector_resources"] = []
+
+            errors.append({
+                "resource": "connector_ids",
+                "error": str(exc)
+            })
+
+        # ----------------------------------------------------
+        # Connector configuration through MCP
+        # ----------------------------------------------------
+
+        connector_names = extract_connector_names(
+            inventory.get("connectors")
+        )
+
+        connector_configs = {}
+
+        for connector_name in connector_names:
+
+            try:
+
+                connector_configs[connector_name] = (
+                    await call_mcp_tool(
+                        session,
+                        "get-connector-config",
+                        {
+                            "connectorName": connector_name,
+                            "environmentId": environment_id,
+                            "clusterId": cluster_id
+                        }
+                    )
+                )
+
+            except Exception as exc:
+
+                connector_configs[connector_name] = {
+                    "retrieval_error": str(exc)
+                }
+
+        inventory["connector_configs"] = connector_configs
+
+    return inventory, errors
+
+
+# ============================================================
+# RESOURCE COUNTING
+# ============================================================
+
+def count_resources(payload, resource_type):
+
+    if payload is None:
+        return None
+
+    if resource_type == "connectors":
+
+        if isinstance(payload, (dict, list)):
+            return len(extract_connector_names(payload))
+
+        return len(extract_connector_names(payload))
+
+    if isinstance(payload, dict):
+
+        for key in (
+            "data",
+            "items",
+            "organizations",
+            "environments",
+            "clusters",
+            "topics",
+            "schemas",
+            "compute_pools"
+        ):
+
+            value = payload.get(key)
+
+            if isinstance(value, (dict, list)):
+                return len(value)
+
+        if any(
+            key in payload
+            for key in ("id", "resource_id", "cluster_id")
+        ):
+            return 1
+
+        return len(payload)
+
+    if isinstance(payload, list):
+        return len(payload)
+
+    if isinstance(payload, str):
+
+        patterns = {
+            "organizations": r"^\s*Organization:",
+            "environments": r"^\s*Environment:",
+            "clusters": r"^\s*Cluster:",
+            "topics": r"^\s*Topic:",
+            "schemas": r"^\s*Subject:",
+            "compute_pools": r"^\s*Compute Pool:"
+        }
+
+        pattern = patterns.get(resource_type)
+
+        if pattern:
+            matches = re.findall(
+                pattern,
+                payload,
+                re.MULTILINE
+            )
+
+            if matches:
+                return len(matches)
+
+        if resource_type == "topics":
+
+            match = re.search(
+                r"Kafka topics:\s*(.*)",
+                payload,
+                re.IGNORECASE | re.DOTALL
+            )
+
+            if match:
+                return len([
+                    item for item in match.group(1).split(",")
+                    if item.strip()
+                ])
+
+        count_match = re.search(
+            r"(?:Successfully retrieved|Retrieved)\s+(\d+)",
+            payload,
+            re.IGNORECASE
+        )
+
+        if count_match:
+            return int(count_match.group(1))
+
+    return None
+
+
+# ============================================================
+# DISPLAY MCP RESPONSE
+# ============================================================
+
+def display_mcp_response(payload):
+
+    if payload is None:
+        st.warning("No response received.")
+        return
+
+    if isinstance(payload, (dict, list)):
+        st.json(payload)
+        return
+
+    if isinstance(payload, str):
+
+        text = payload.strip()
+
+        if not text:
+            st.info("Empty response.")
+            return
+
+        try:
+            parsed = json.loads(text)
+
+            if isinstance(parsed, (dict, list)):
+                st.json(parsed)
+                return
+
+        except json.JSONDecodeError:
             pass
 
-    # Use cluster/environment pairs. When environment is absent, use all known
-    # environments as a fallback only if the MCP tool requires it.
-    cluster_pairs = []
-    for cluster in cluster_resources:
-        cluster_id = cluster.get("resource_id")
-        env_id = cluster.get("environment_id")
-        if cluster_id:
-            cluster_pairs.append((cluster_id, env_id))
+        st.code(text, language="text")
+        return
 
-    for cluster_id, env_id in cluster_pairs:
-        context = {
-            "cluster_id": cluster_id,
-            "environment_id": env_id,
-            "env_id": env_id,
-        }
-        add(
-            "list-topics", "topic", context,
-            environment_id=env_id, cluster_id=cluster_id
-        )
-        add(
-            "list-consumer-groups", "consumer_group", context,
-            environment_id=env_id, cluster_id=cluster_id
-        )
-
-    # Environment-scoped discovery.
-    for env_id in env_ids or [None]:
-        context = {"environment_id": env_id, "env_id": env_id}
-        add("list-connectors", "connector", context, environment_id=env_id)
-        add("list-schemas", "schema_subject", context, environment_id=env_id)
-        add("list-compute-pools", "flink_compute_pool", context, environment_id=env_id)
-
-    # De-duplicate without dropping different resources that share a name.
-    unique = {}
-    for resource in resources:
-        unique[resource_key(resource)] = resource
-    resources = list(unique.values())
-
-    return {
-        "discovered_at": date.today().isoformat(),
-        "resource_count": len(resources),
-        "resources": resources,
-        "tool_calls": calls,
-        "failures": failures,
-    }
+    st.write(payload)
 
 
 # ============================================================
-# BILLING REST API
+# BILLING API
 # ============================================================
 
-def get_billing_credentials() -> tuple[str, str]:
-    api_key = os.getenv("CONFLUENT_CLOUD_API_KEY")
-    api_secret = os.getenv("CONFLUENT_CLOUD_API_SECRET")
-    if not api_key or not api_secret:
+def get_next_page_token(payload):
+
+    metadata = payload.get("metadata") or {}
+
+    for key in (
+        "next_page_token",
+        "nextPageToken",
+        "page_token"
+    ):
+
+        token = metadata.get(key)
+
+        if token:
+            return str(token)
+
+    next_url = metadata.get("next")
+
+    if isinstance(next_url, str):
+
+        values = parse_qs(urlparse(next_url).query)
+
+        if "page_token" in values:
+            return values["page_token"][0]
+
+    return None
+
+
+def fetch_billing_costs(start_date, end_date_exclusive):
+
+    if end_date_exclusive <= start_date:
+        raise ValueError("Invalid date range.")
+
+    if (end_date_exclusive - start_date).days > 31:
         raise ValueError(
-            "Missing CONFLUENT_CLOUD_API_KEY or "
-            "CONFLUENT_CLOUD_API_SECRET in the parent .env file."
+            "Maximum billing date range is 31 days."
         )
-    return api_key, api_secret
 
-
-def get_billing_headers() -> dict:
-    api_key, api_secret = get_billing_credentials()
-    encoded = base64.b64encode(
-        f"{api_key}:{api_secret}".encode("utf-8")
-    ).decode("ascii")
-    return {
+    headers = {
         "Accept": "application/json",
-        "Authorization": f"Basic {encoded}",
+        "Authorization": get_api_auth()
     }
-
-
-def retrieve_billing(
-    start_date: date,
-    end_date: date,
-    page_size: int = DEFAULT_PAGE_SIZE,
-) -> dict:
-    """
-    Retrieve organization-wide billing. end_date follows the Billing API's
-    exclusive-end convention. Keep every raw line item, including records
-    missing product/resource attributes.
-    """
-    if end_date <= start_date:
-        raise ValueError("End date must be later than start date.")
-    if (end_date - start_date).days > MAX_BILLING_RANGE_DAYS:
-        raise ValueError(
-            f"Billing date range cannot exceed {MAX_BILLING_RANGE_DAYS} days."
-        )
-    if not 1 <= page_size <= DEFAULT_PAGE_SIZE:
-        raise ValueError(f"Page size must be between 1 and {DEFAULT_PAGE_SIZE}.")
 
     params = {
         "start_date": start_date.isoformat(),
-        "end_date": end_date.isoformat(),
-        "page_size": page_size,
+        "end_date": end_date_exclusive.isoformat(),
+        "page_size": PAGE_SIZE
     }
-    headers = get_billing_headers()
-    records, pages, seen_tokens = [], [], set()
+
+    records = []
+    pages = []
+    page_token = None
+    seen_tokens = set()
 
     while True:
+
+        if page_token:
+            params["page_token"] = page_token
+        else:
+            params.pop("page_token", None)
+
         response = requests.get(
-            BILLING_API_URL,
+            BILLING_API,
             headers=headers,
             params=params,
-            timeout=REQUEST_TIMEOUT,
+            timeout=60
         )
-        if response.status_code != 200:
+
+        if not response.ok:
             raise RuntimeError(
-                f"Billing API HTTP {response.status_code}: {response.text}"
+                f"Billing API HTTP {response.status_code}: "
+                f"{response.text[:2000]}"
             )
-        try:
-            payload = response.json()
-        except ValueError as exc:
-            raise RuntimeError("Billing API returned invalid JSON.") from exc
 
-        if payload.get("errors"):
-            raise RuntimeError(json.dumps(payload["errors"], indent=2))
-        if not isinstance(payload.get("data"), list):
-            raise RuntimeError("Billing API response does not contain a data array.")
+        payload = response.json()
 
-        records.extend(payload["data"])
-        pages.append(payload)
-        next_token = (payload.get("metadata") or {}).get("next")
+        page_records = payload.get("data", [])
+
+        if not isinstance(page_records, list):
+            raise RuntimeError(
+                "Invalid billing API data response."
+            )
+
+        records.extend(page_records)
+
+        pages.append({
+            "record_count": len(page_records)
+        })
+
+        next_token = get_next_page_token(payload)
+
         if not next_token:
             break
-        next_token = str(next_token)
-        if next_token in seen_tokens:
-            raise RuntimeError("Repeated billing pagination token detected.")
-        seen_tokens.add(next_token)
-        params["page_token"] = next_token
 
-    return {
-        "start_date": start_date.isoformat(),
-        "end_date_exclusive": end_date.isoformat(),
-        "page_size": page_size,
-        "record_count": len(records),
-        "records": records,
-        "pages": pages,
-        "retrieved_at": pd.Timestamp.now(tz="UTC").isoformat(),
+        if next_token in seen_tokens:
+            raise RuntimeError(
+                "Repeated billing pagination token."
+            )
+
+        seen_tokens.add(next_token)
+        page_token = next_token
+
+        if len(pages) > 100:
+            raise RuntimeError(
+                "Pagination safety limit reached."
+            )
+
+    return records, pages
+
+
+# ============================================================
+# RESOURCE ID CORRELATION
+# ============================================================
+
+def collect_resource_id_map(inventory):
+
+    id_map = {}
+
+    def add_resource(resource_id, resource_type, name=""):
+
+        if not isinstance(resource_id, str):
+            return
+
+        resource_id = resource_id.strip()
+
+        if not resource_id:
+            return
+
+        id_map[resource_id] = {
+            "resource_id": resource_id,
+            "resource_type": resource_type,
+            "display_name": str(name or "")
+        }
+
+    def walk(value, resource_type, parent_name=""):
+
+        if isinstance(value, dict):
+
+            name = (
+                value.get("name")
+                or value.get("display_name")
+                or value.get("topic_name")
+                or value.get("connector_name")
+                or value.get("connectorName")
+                or parent_name
+            )
+
+            for key in (
+                "id",
+                "resource_id",
+                "cluster_id",
+                "environment_id",
+                "connector_id"
+            ):
+
+                resource_id = value.get(key)
+
+                if isinstance(resource_id, str):
+                    add_resource(
+                        resource_id,
+                        resource_type,
+                        name
+                    )
+
+                elif isinstance(resource_id, dict):
+
+                    nested_id = resource_id.get("id")
+
+                    if isinstance(nested_id, str):
+                        add_resource(
+                            nested_id,
+                            resource_type,
+                            name
+                        )
+
+            for child in value.values():
+                walk(
+                    child,
+                    resource_type,
+                    str(name or parent_name)
+                )
+
+        elif isinstance(value, list):
+
+            for child in value:
+                walk(child, resource_type, parent_name)
+
+    type_map = {
+        "organizations": "organization",
+        "environments": "environment",
+        "clusters": "kafka_cluster",
+        "topics": "topic",
+        "connectors": "connector",
+        "schemas": "schema",
+        "compute_pools": "flink_compute_pool"
     }
 
+    for key, payload in inventory.items():
 
-# ============================================================
-# BILLING NORMALIZATION AND RESOURCE CORRELATION
-# ============================================================
+        if key in type_map:
+            walk(payload, type_map[key])
 
-def billing_dataframe(records: list[dict]) -> pd.DataFrame:
-    rows = []
-    for record in records:
+    # --------------------------------------------------------
+    # Extract IDs from plain-text MCP responses.
+    # --------------------------------------------------------
+
+    environment_map = inventory.get("environment_id_map") or {}
+
+    for resource_id, name in environment_map.items():
+        add_resource(
+            resource_id,
+            "environment",
+            name
+        )
+
+    cluster_map = inventory.get("cluster_id_map") or {}
+
+    for resource_id, name in cluster_map.items():
+        add_resource(
+            resource_id,
+            "kafka_cluster",
+            name
+        )
+
+    # Fallback: IDs can still be extracted even if the
+    # MCP response does not contain a recognizable name.
+
+    for resource_id in find_environment_ids(
+        inventory.get("environments")
+    ):
+        add_resource(
+            resource_id,
+            "environment"
+        )
+
+    for resource_id in find_cluster_ids(
+        inventory.get("clusters")
+    ):
+        add_resource(
+            resource_id,
+            "kafka_cluster"
+        )
+
+    # --------------------------------------------------------
+    # Connector IDs from the Connect REST API.
+    # --------------------------------------------------------
+
+    for connector in inventory.get("connector_resources", []):
+
+        add_resource(
+            connector.get("id"),
+            "connector",
+            connector.get("name")
+        )
+
+    return id_map
+
+
+def normalize_billing_records(records, resource_id_map):
+
+    normalized = []
+
+    for index, record in enumerate(records):
+
         resource = record.get("resource") or {}
-        environment = resource.get("environment") or {}
-        rows.append({
-            "product": record.get("product") or "UNKNOWN",
-            "line_type": record.get("line_type") or record.get("type") or "UNKNOWN",
-            "resource_id": resource.get("id"),
-            "resource_name": resource.get("display_name"),
-            "environment_id": environment.get("id"),
+
+        resource_id = (
+            resource.get("id")
+            if isinstance(resource, dict)
+            else None
+        )
+
+        resource_name = (
+            resource.get("display_name")
+            if isinstance(resource, dict)
+            else None
+        )
+
+        environment_id = None
+
+        if isinstance(resource, dict):
+
+            environment = resource.get("environment") or {}
+
+            if isinstance(environment, dict):
+                environment_id = environment.get("id")
+
+        match = (
+            resource_id_map.get(resource_id)
+            if resource_id
+            else None
+        )
+
+        if match:
+
+            status = "Matched by exact resource ID"
+
+            resource_type = match["resource_type"]
+
+            matched_name = (
+                match["display_name"]
+                or resource_name
+            )
+
+        elif resource_id:
+
+            status = "Billing resource ID not found in inventory"
+
+            resource_type = "unmatched_resource"
+
+            matched_name = resource_name
+
+        else:
+
+            status = "Organization-level or unallocated"
+
+            resource_type = "unallocated"
+
+            matched_name = None
+
+        amount = record.get("amount")
+        quantity = record.get("quantity")
+
+        normalized.append({
+
+            "record_number": index + 1,
+
             "start_date": record.get("start_date"),
             "end_date": record.get("end_date"),
-            "granularity": record.get("granularity"),
-            "quantity": record.get("quantity"),
+
+            "product": (
+                record.get("product")
+                or "UNKNOWN / NOT PROVIDED"
+            ),
+
+            "line_type": (
+                record.get("line_type")
+                or record.get("type")
+                or "UNKNOWN"
+            ),
+
+            "amount": (
+                float(amount)
+                if amount is not None
+                else 0.0
+            ),
+
+            "original_amount": (
+                float(record["original_amount"])
+                if record.get("original_amount") is not None
+                else None
+            ),
+
+            "discount_amount": (
+                float(record["discount_amount"])
+                if record.get("discount_amount") is not None
+                else None
+            ),
+
+            "quantity": (
+                float(quantity)
+                if quantity is not None
+                else None
+            ),
+
             "unit": record.get("unit"),
-            "price": record.get("price"),
-            "original_amount": record.get("original_amount", 0) or 0,
-            "discount_amount": record.get("discount_amount", 0) or 0,
-            "amount": record.get("amount", 0) or 0,
-            "network_access_type": record.get("network_access_type"),
-            "raw_record": record,
+
+            "resource_id": resource_id,
+            "billing_resource_name": resource_name,
+            "environment_id": environment_id,
+
+            "matched_resource_type": resource_type,
+            "matched_resource_name": matched_name,
+
+            "attribution_status": status,
+
+            "raw_record": record
         })
-    return pd.DataFrame(rows)
+
+    return normalized
 
 
-def resource_inventory_dataframe(inventory: dict) -> pd.DataFrame:
+# ============================================================
+# COST SUMMARY AND RECONCILIATION
+# ============================================================
+
+def build_resource_cost_summary(normalized):
+
     rows = []
-    for resource in inventory.get("resources", []):
+
+    for item in normalized:
+
         rows.append({
-            "resource_type": resource.get("resource_type"),
-            "resource_name": resource.get("resource_name"),
-            "resource_id": resource.get("resource_id"),
-            "environment_id": resource.get("environment_id"),
-            "cluster_id": resource.get("cluster_id"),
+
+            "Attribution": item["attribution_status"],
+
+            "Resource type": item["matched_resource_type"],
+
+            "Resource name": (
+                item["matched_resource_name"]
+                or item["billing_resource_name"]
+                or "Not specified"
+            ),
+
+            "Resource ID": (
+                item["resource_id"]
+                or "Not provided"
+            ),
+
+            "Product": item["product"],
+
+            "Line type": item["line_type"],
+
+            "Amount": item["amount"]
         })
-    return pd.DataFrame(rows)
 
+    df = pd.DataFrame(rows)
 
-def correlate_billing(
-    billing_df: pd.DataFrame,
-    inventory: dict,
-) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Match actual billing rows to discovered inventory by exact resource ID."""
-    if billing_df.empty:
-        return billing_df.copy(), pd.DataFrame()
+    if df.empty:
+        return df
 
-    inventory_df = resource_inventory_dataframe(inventory)
-    if inventory_df.empty:
-        result = billing_df.copy()
-        result["matched_resource_type"] = None
-        result["match_status"] = "UNMATCHED"
-        return result, inventory_df
-
-    # Index only exact IDs. Do not guess a match from display names.
-    id_map = {}
-    for _, row in inventory_df.iterrows():
-        resource_id = row.get("resource_id")
-        if pd.notna(resource_id) and str(resource_id).strip():
-            id_map.setdefault(str(resource_id), []).append(row.to_dict())
-
-    matched_types, matched_names, statuses = [], [], []
-    for _, billing_row in billing_df.iterrows():
-        resource_id = billing_row.get("resource_id")
-        candidates = id_map.get(str(resource_id), []) if pd.notna(resource_id) else []
-        if candidates:
-            # Prefer an exact resource ID and, where available, matching environment.
-            env_id = billing_row.get("environment_id")
-            selected = next(
-                (
-                    item for item in candidates
-                    if env_id and item.get("environment_id") == env_id
-                ),
-                candidates[0],
-            )
-            matched_types.append(selected.get("resource_type"))
-            matched_names.append(selected.get("resource_name"))
-            statuses.append("DIRECT_RESOURCE_MATCH")
-        elif pd.isna(resource_id) or not str(resource_id).strip():
-            matched_types.append(None)
-            matched_names.append(None)
-            statuses.append("ORGANIZATION_LEVEL_OR_NO_RESOURCE_ID")
-        else:
-            matched_types.append(None)
-            matched_names.append(None)
-            statuses.append("RESOURCE_ID_NOT_IN_DISCOVERED_INVENTORY")
-
-    result = billing_df.copy()
-    result["matched_resource_type"] = matched_types
-    result["matched_inventory_name"] = matched_names
-    result["match_status"] = statuses
-    return result, inventory_df
-
-
-def make_resource_cost_table(correlated_df: pd.DataFrame) -> pd.DataFrame:
-    if correlated_df.empty:
-        return pd.DataFrame()
-    resource_rows = correlated_df[
-        correlated_df["resource_id"].notna()
-        & (correlated_df["resource_id"].astype(str).str.strip() != "")
-    ]
-    if resource_rows.empty:
-        return pd.DataFrame()
     return (
-        resource_rows.groupby(
+        df.groupby(
             [
-                "product", "matched_resource_type", "resource_name",
-                "resource_id", "environment_id", "match_status",
+                "Attribution",
+                "Resource type",
+                "Resource name",
+                "Resource ID",
+                "Product"
             ],
             dropna=False,
-            as_index=False,
+            as_index=False
         )
         .agg(
-            amount=("amount", "sum"),
-            original_amount=("original_amount", "sum"),
-            discount_amount=("discount_amount", "sum"),
-            billing_line_items=("amount", "size"),
+            Amount=("Amount", "sum"),
+            Line_items=("Line type", "count"),
+            Line_types=(
+                "Line type",
+                lambda x: ", ".join(
+                    sorted(set(map(str, x)))
+                )
+            )
         )
-        .sort_values("amount", ascending=False)
+        .sort_values("Amount", ascending=False)
     )
 
 
-def make_resource_coverage(
-    inventory_df: pd.DataFrame,
-    correlated_df: pd.DataFrame,
-) -> pd.DataFrame:
-    if inventory_df.empty:
-        return pd.DataFrame()
-    billed_ids = set()
-    if not correlated_df.empty:
-        billed_ids = set(
-            correlated_df.loc[
-                correlated_df["resource_id"].notna(), "resource_id"
-            ].astype(str)
-        )
-    result = inventory_df.copy()
-    result["billing_status"] = result["resource_id"].apply(
-        lambda value: (
-            "DIRECT_BILLING_RECORD_FOUND"
-            if pd.notna(value) and str(value) in billed_ids
-            else "NO_INDIVIDUAL_BILLING_RECORD_FOUND"
-        )
+def calculate_reconciliation(normalized):
+
+    total = sum(
+        item["amount"]
+        for item in normalized
     )
-    return result
 
+    matched = sum(
+        item["amount"]
+        for item in normalized
+        if item["attribution_status"]
+        == "Matched by exact resource ID"
+    )
 
-def billing_summary(df: pd.DataFrame) -> dict:
-    if df.empty:
-        return {
-            "gross_charges": 0.0,
-            "credits": 0.0,
-            "net_amount": 0.0,
-            "line_items": 0,
-        }
-    amount = pd.to_numeric(df["amount"], errors="coerce").fillna(0)
+    unallocated = sum(
+        item["amount"]
+        for item in normalized
+        if item["attribution_status"]
+        == "Organization-level or unallocated"
+    )
+
+    unmatched = sum(
+        item["amount"]
+        for item in normalized
+        if item["attribution_status"]
+        == "Billing resource ID not found in inventory"
+    )
+
     return {
-        "gross_charges": float(amount[amount > 0].sum()),
-        "credits": float(amount[amount < 0].sum()),
-        "net_amount": float(amount.sum()),
-        "line_items": int(len(df)),
+
+        "billing_total": total,
+
+        "matched_resource_total": matched,
+
+        "unallocated_total": unallocated,
+
+        "unmatched_resource_total": unmatched,
+
+        "reconciliation_difference": (
+            total - matched - unallocated - unmatched
+        ),
+
+        "record_count": len(normalized)
     }
 
 
 # ============================================================
-# PERSISTENCE
+# STREAMLIT APPLICATION
 # ============================================================
 
-def save_billing(billing: dict) -> Path:
-    return save_json("billing.json", billing)
-
-
-def save_inventory(inventory: dict) -> Path:
-    return save_json("resource_inventory.json", inventory)
-
-
-def save_correlation(correlated_df: pd.DataFrame, coverage_df: pd.DataFrame):
-    corr_path = RESULTS_DIR / "billing_resource_correlation.csv"
-    coverage_path = RESULTS_DIR / "resource_billing_coverage.csv"
-    export_df = correlated_df.drop(columns=["raw_record"], errors="ignore")
-    export_df.to_csv(corr_path, index=False)
-    coverage_df.to_csv(coverage_path, index=False)
-    return corr_path, coverage_path
-
-
-# ============================================================
-# SIDEBAR AND NAVIGATION
-# ============================================================
-
-st.sidebar.title("Navigation")
-section = st.sidebar.radio(
-    "Select section",
-    ["Dashboard", "Resource Explorer", "Billing Explorer"],
+st.set_page_config(
+    page_title="Confluent FinOps",
+    layout="wide"
 )
-st.sidebar.divider()
-st.sidebar.caption("Connection status")
-st.sidebar.write(f"MCP config: {'Available' if CONFIG_PATH.exists() else 'Not found'}")
-st.sidebar.write(f"Parent .env: {'Available' if PARENT_ENV_FILE.exists() else 'Not found'}")
-st.sidebar.write("Billing source: Confluent Cloud REST API")
+
+st.title("Confluent FinOps")
+
+st.caption(
+    "Resource inventory from the Confluent MCP server "
+    "and actual billing line items from the "
+    "Confluent Billing REST API."
+)
+
+load_environment()
 
 
 # ============================================================
-# DASHBOARD
+# SESSION STATE
 # ============================================================
 
-if section == "Dashboard":
-    st.header("Organization Overview")
-    st.write(
-        "Discover resources through the existing Confluent MCP server and "
-        "retrieve organization-wide billing directly from the Confluent Billing API."
-    )
+defaults = {
+    "inventory": None,
+    "discovery_errors": [],
+    "billing_records": None,
+    "normalized_records": None,
+    "resource_summary": None,
+    "reconciliation": None,
+    "billing_pages": None
+}
 
-    inventory = st.session_state.get("resource_inventory")
-    billing = st.session_state.get("billing_data")
+for key, value in defaults.items():
 
-    col1, col2, col3 = st.columns(3)
-    col1.metric(
-        "Discovered resources",
-        inventory.get("resource_count", 0) if inventory else "Not loaded",
-    )
-    col2.metric(
-        "Billing line items",
-        billing.get("record_count", 0) if billing else "Not loaded",
-    )
-    col3.metric(
-        "MCP tools loaded",
-        len(st.session_state.get("mcp_tools", [])),
-    )
-
-    st.info(
-        "Recommended workflow: load MCP tools, discover the organization inventory, "
-        "retrieve billing for a date range, then review resource-level matches."
-    )
+    if key not in st.session_state:
+        st.session_state[key] = value
 
 
 # ============================================================
-# RESOURCE EXPLORER
+# SIDEBAR
 # ============================================================
 
-elif section == "Resource Explorer":
-    st.header("Organization Resource Explorer")
-    st.write(
-        "Discover environments, Kafka clusters, topics, connectors, schemas, "
-        "Flink compute pools and consumer groups using read-only MCP tools."
-    )
+with st.sidebar:
 
-    if not CONFIG_PATH.exists():
-        st.error(f"MCP configuration not found: {CONFIG_PATH}")
-        st.stop()
+    st.header("Billing period")
 
-    if st.button("Load Available MCP Tools", type="primary"):
-        with st.spinner("Connecting to the existing Confluent MCP server..."):
-            try:
-                tools = run_async(get_mcp_tools())
-                st.session_state["mcp_tools"] = tools
-                st.success(f"Connected. {len(tools)} tools are available.")
-                save_json("available_mcp_tools.json", tools)
-            except Exception as exc:
-                st.error(f"MCP connection failed: {exc}")
+    default_end = date.today() - timedelta(days=1)
+    default_start = default_end - timedelta(days=6)
 
-    tools = st.session_state.get("mcp_tools", [])
-    tool_map = {tool["name"]: tool for tool in tools}
-
-    if tools:
-        st.subheader("Automated organization discovery")
-        st.caption(
-            "The discovery process uses only read-only tools. Some tools require "
-            "cluster or environment identifiers; those are supplied from earlier results."
+    selected_range = st.date_input(
+        "Select date range",
+        value=(default_start, default_end),
+        help=(
+            "End date is inclusive in this UI. "
+            "It is converted to an exclusive API end date."
         )
+    )
 
-        if st.button("Discover All Available Resources", type="primary"):
-            with st.spinner(
-                "Discovering organizations, environments, clusters, topics, "
-                "connectors, schemas, compute pools and consumer groups..."
-            ):
-                try:
-                    inventory = discover_organization_resources(tool_map)
-                    st.session_state["resource_inventory"] = inventory
-                    path = save_inventory(inventory)
-                    st.success(
-                        f"Discovery completed. {inventory['resource_count']} "
-                        f"resource records saved."
-                    )
-                    st.caption(f"Inventory saved to: {path}")
-                    if inventory.get("failures"):
-                        st.warning(
-                            f"{len(inventory['failures'])} discovery calls failed "
-                            "or could not be executed. Review the failures below."
-                        )
-                except Exception as exc:
-                    st.error(f"Resource discovery failed: {exc}")
+    st.caption("Maximum date range: 31 days.")
 
-        inventory = st.session_state.get("resource_inventory")
-        if inventory:
-            st.divider()
-            st.subheader("Discovered inventory")
-            inventory_df = resource_inventory_dataframe(inventory)
-            if not inventory_df.empty:
-                type_counts = (
-                    inventory_df.groupby("resource_type")
-                    .size()
-                    .reset_index(name="count")
-                    .sort_values("count", ascending=False)
-                )
-                st.dataframe(type_counts, width="stretch", hide_index=True)
-                selected_type = st.selectbox(
-                    "Filter resource type",
-                    ["All"] + sorted(inventory_df["resource_type"].dropna().unique()),
-                )
-                filtered = inventory_df
-                if selected_type != "All":
-                    filtered = filtered[
-                        filtered["resource_type"] == selected_type
-                    ]
-                st.dataframe(filtered, width="stretch", hide_index=True)
-                st.download_button(
-                    "Download resource inventory CSV",
-                    data=inventory_df.to_csv(index=False),
-                    file_name="confluent_resource_inventory.csv",
-                    mime="text/csv",
-                    width="content",
-                )
-            else:
-                st.warning(
-                    "No structured resource records were extracted. Raw MCP results "
-                    "are retained in the discovery output for inspection."
-                )
+    run_discovery = st.button(
+        "Discover resources",
+        use_container_width=True
+    )
 
-            with st.expander("Discovery failures and raw tool responses"):
-                st.json({
-                    "failures": inventory.get("failures", []),
-                    "tool_calls": inventory.get("tool_calls", []),
-                })
-
-    else:
-        st.info("Load Available MCP Tools to begin organization discovery.")
+    run_billing = st.button(
+        "Fetch billing and correlate",
+        type="primary",
+        use_container_width=True
+    )
 
     st.divider()
-    st.subheader("Manual read-only MCP query")
-    if tools:
-        available = [name for name in READ_ONLY_TOOLS if name in tool_map]
-        if available:
-            selected = st.selectbox("Select MCP tool", available)
-            st.caption(
-                tool_map[selected].get("description")
-                or TOOL_DESCRIPTIONS.get(selected, "")
-            )
-            st.json(tool_map[selected].get("input_schema", {}))
-            args_text = st.text_area(
-                "Arguments (JSON)",
-                value="{}",
-                height=120,
-                key="manual_mcp_arguments",
-            )
-            if st.button("Execute MCP Query"):
-                try:
-                    args = json.loads(args_text)
-                    if not isinstance(args, dict):
-                        raise ValueError("Arguments must be a JSON object.")
-                    with st.spinner(f"Executing {selected}..."):
-                        result = run_async(execute_mcp_tool(selected, args))
-                    st.session_state["manual_mcp_result"] = result
-                    save_json(
-                        f"manual_{selected.replace('-', '_')}_latest.json",
-                        result,
-                    )
-                    if result.get("is_error"):
-                        st.error("MCP tool returned an error.")
-                    else:
-                        st.success("Query completed.")
-                    st.json(result)
-                except Exception as exc:
-                    st.error(f"Query failed: {exc}")
+
+    st.caption("MCP config")
+    st.caption(str(MCP_CONFIG_PATH))
 
 
 # ============================================================
-# BILLING EXPLORER
+# RUN DISCOVERY AND BILLING
 # ============================================================
 
-elif section == "Billing Explorer":
-    st.header("Organization-wide Billing Explorer")
-    st.write(
-        "Retrieve all billing line items for the organization and correlate "
-        "them with individually discovered Confluent resources."
-    )
-    st.info(
-        "Billing is retrieved once at organization level. The application then "
-        "matches each billing record to inventory using exact resource IDs. "
-        "A resource without its own billing record is not assigned an invented cost."
-    )
+if run_discovery or run_billing:
 
-    today = date.today()
-    default_start = today - timedelta(days=1)
-    default_end = today
-
-    date_col1, date_col2, date_col3 = st.columns(3)
-    with date_col1:
-        start_date = st.date_input("Start date (inclusive)", value=default_start)
-    with date_col2:
-        end_date = st.date_input("End date (exclusive)", value=default_end)
-    with date_col3:
-        page_size = st.number_input(
-            "Page size",
-            min_value=1,
-            max_value=DEFAULT_PAGE_SIZE,
-            value=DEFAULT_PAGE_SIZE,
-            step=100,
-        )
-
-    date_valid = (
-        end_date > start_date
-        and (end_date - start_date).days <= MAX_BILLING_RANGE_DAYS
-    )
-    if not date_valid:
-        st.error(
-            f"Choose an exclusive end date after the start date and a range "
-            f"of no more than {MAX_BILLING_RANGE_DAYS} days."
-        )
-
-    if st.button(
-        "Retrieve Organization Billing",
-        type="primary",
-        disabled=not date_valid,
+    if (
+        not isinstance(selected_range, (tuple, list))
+        or len(selected_range) != 2
     ):
-        try:
-            with st.spinner("Retrieving all organization billing line items..."):
-                billing_data = retrieve_billing(
-                    start_date, end_date, int(page_size)
-                )
-                save_path = save_billing(billing_data)
-            st.session_state["billing_data"] = billing_data
-            st.success(
-                f"Retrieved {billing_data['record_count']} billing line items."
-            )
-            st.caption(f"Raw billing saved to: {save_path}")
-        except Exception as exc:
-            st.error(f"Billing retrieval failed: {exc}")
+        st.error("Select both start and end dates.")
+        st.stop()
 
-    billing_data = st.session_state.get("billing_data")
-    inventory = st.session_state.get("resource_inventory")
+    start_date, end_date_inclusive = selected_range
 
-    if billing_data:
-        raw_records = billing_data.get("records", [])
-        billing_df = billing_dataframe(raw_records)
-        summary = billing_summary(billing_df)
+    end_date_exclusive = end_date_inclusive + timedelta(days=1)
 
-        st.divider()
-        st.subheader("Organization billing summary")
-        m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Gross charges", f"${summary['gross_charges']:,.4f}")
-        m2.metric("Credits / adjustments", f"${summary['credits']:,.4f}")
-        m3.metric("Net amount", f"${summary['net_amount']:,.4f}")
-        m4.metric("Billing line items", summary["line_items"])
+    if end_date_inclusive < start_date:
+        st.error("Invalid date range.")
+        st.stop()
 
-        st.caption(
-            f"Start: {billing_data['start_date']} | "
-            f"End (exclusive): {billing_data['end_date_exclusive']}"
-        )
+    if (end_date_exclusive - start_date).days > 31:
+        st.error("Select a maximum of 31 days.")
+        st.stop()
 
-        if not billing_df.empty:
-            st.divider()
-            st.subheader("Product breakdown")
-            product_df = (
-                billing_df.groupby("product", as_index=False)["amount"]
-                .sum()
-                .sort_values("amount", ascending=False)
-            )
-            st.dataframe(product_df, width="stretch", hide_index=True)
-            st.bar_chart(product_df.set_index("product"))
+    # --------------------------------------------------------
+    # Resource discovery
+    # --------------------------------------------------------
 
-            st.divider()
-            st.subheader("Billing dimensions")
-            dimension_df = (
-                billing_df.groupby(
-                    ["product", "line_type", "unit"],
-                    dropna=False,
-                    as_index=False,
-                )
-                .agg(
-                    amount=("amount", "sum"),
-                    quantity=("quantity", "sum"),
-                    line_items=("amount", "size"),
-                )
-                .sort_values("amount", ascending=False)
-            )
-            st.dataframe(dimension_df, width="stretch", hide_index=True)
+    if run_discovery or st.session_state.inventory is None:
 
-            if inventory:
-                correlated_df, inventory_df = correlate_billing(
-                    billing_df, inventory
-                )
-                resource_costs = make_resource_cost_table(correlated_df)
-                coverage_df = make_resource_coverage(
-                    inventory_df, correlated_df
-                )
-                corr_path, coverage_path = save_correlation(
-                    correlated_df, coverage_df
+        with st.spinner("Discovering Confluent resources..."):
+
+            try:
+
+                inventory, errors = asyncio.run(
+                    discover_resources()
                 )
 
-                st.divider()
-                st.subheader("Individual resource billing")
-                direct_matches = correlated_df[
-                    correlated_df["match_status"] == "DIRECT_RESOURCE_MATCH"
-                ]
-                if not resource_costs.empty:
-                    st.dataframe(
-                        resource_costs,
-                        width="stretch",
-                        hide_index=True,
-                    )
-                else:
-                    st.warning(
-                        "No billing records matched discovered resource IDs. "
-                        "Review unmatched records and discovery results."
-                    )
+                st.session_state.inventory = inventory
+                st.session_state.discovery_errors = errors
 
-                st.divider()
-                st.subheader("Resource billing coverage")
-                st.caption(
-                    "This table distinguishes resources with direct billing records "
-                    "from resources discovered in inventory but not separately billed "
-                    "in the selected billing period."
+                save_json(
+                    "resource_inventory.json",
+                    inventory
                 )
-                if not coverage_df.empty:
-                    st.dataframe(
-                        coverage_df,
-                        width="stretch",
-                        hide_index=True,
-                    )
-                    coverage_counts = (
-                        coverage_df.groupby("billing_status")
-                        .size()
-                        .reset_index(name="resources")
-                    )
-                    st.dataframe(
-                        coverage_counts,
-                        width="stretch",
-                        hide_index=True,
+
+                save_json(
+                    "resource_discovery_errors.json",
+                    errors
+                )
+
+            except Exception as exc:
+
+                st.error(
+                    f"Resource discovery failed: {exc}"
+                )
+
+                st.stop()
+
+    # --------------------------------------------------------
+    # Billing retrieval and correlation
+    # --------------------------------------------------------
+
+    if run_billing:
+
+        with st.spinner(
+            "Fetching billing and correlating resources..."
+        ):
+
+            try:
+
+                records, pages = fetch_billing_costs(
+                    start_date,
+                    end_date_exclusive
+                )
+
+                resource_id_map = collect_resource_id_map(
+                    st.session_state.inventory or {}
+                )
+
+                normalized = normalize_billing_records(
+                    records,
+                    resource_id_map
+                )
+
+                summary = build_resource_cost_summary(
+                    normalized
+                )
+
+                reconciliation = calculate_reconciliation(
+                    normalized
+                )
+
+                st.session_state.billing_records = records
+                st.session_state.normalized_records = normalized
+                st.session_state.resource_summary = summary
+                st.session_state.reconciliation = reconciliation
+                st.session_state.billing_pages = pages
+
+                save_json("billing_raw.json", records)
+
+                save_json(
+                    "billing_normalized.json",
+                    normalized
+                )
+
+                save_json(
+                    "resource_id_map.json",
+                    resource_id_map
+                )
+
+                save_json(
+                    "billing_reconciliation.json",
+                    reconciliation
+                )
+
+                if not summary.empty:
+
+                    summary.to_csv(
+                        RESULTS_DIR / "resource_cost_summary.csv",
+                        index=False
                     )
 
-                st.divider()
-                st.subheader("Unmatched and organization-level billing")
-                unmatched_df = correlated_df[
-                    correlated_df["match_status"] != "DIRECT_RESOURCE_MATCH"
-                ]
-                if not unmatched_df.empty:
-                    display_unmatched = unmatched_df.drop(
-                        columns=["raw_record"], errors="ignore"
-                    )
-                    st.dataframe(
-                        display_unmatched,
-                        width="stretch",
-                        hide_index=True,
-                    )
-                else:
-                    st.success("Every resource-associated billing record matched inventory.")
+            except Exception as exc:
 
-                st.caption(
-                    f"Correlation CSV: {corr_path} | Coverage CSV: {coverage_path}"
+                st.error(
+                    f"Billing processing failed: {exc}"
                 )
 
-            else:
-                st.warning(
-                    "Resource inventory has not been loaded. Go to Resource Explorer, "
-                    "load MCP tools and run Discover All Available Resources to enable "
-                    "individual resource correlation."
-                )
-
-            st.divider()
-            st.subheader("All billing line items")
-            display_df = billing_df.drop(columns=["raw_record"], errors="ignore")
-            st.dataframe(display_df, width="stretch", hide_index=True)
-
-            st.divider()
-            st.subheader("Exports")
-            export_col1, export_col2 = st.columns(2)
-            with export_col1:
-                st.download_button(
-                    "Download raw billing JSON",
-                    data=json.dumps(
-                        billing_data, indent=2, ensure_ascii=False, default=str
-                    ),
-                    file_name="confluent_billing.json",
-                    mime="application/json",
-                    width="content",
-                )
-            with export_col2:
-                st.download_button(
-                    "Download billing CSV",
-                    data=display_df.to_csv(index=False),
-                    file_name="confluent_billing.csv",
-                    mime="text/csv",
-                    width="content",
-                )
-
-        else:
-            st.info("No billing line items were returned for this period.")
-    else:
-        st.info("Select a date range and retrieve organization billing to begin.")
+                st.stop()
 
 
 # ============================================================
-# FOOTER
+# RESOURCE INVENTORY DASHBOARD
+# ============================================================
+
+if st.session_state.inventory is not None:
+
+    st.subheader("Resource inventory")
+
+    inventory = st.session_state.inventory
+
+    resource_definitions = [
+        ("Organizations", "organizations"),
+        ("Environments", "environments"),
+        ("Kafka clusters", "clusters"),
+        ("Topics", "topics"),
+        ("Connectors", "connectors"),
+        ("Schemas", "schemas"),
+        ("Compute pools", "compute_pools")
+    ]
+
+    cols = st.columns(4)
+
+    for index, (label, key) in enumerate(resource_definitions):
+
+        count = count_resources(
+            inventory.get(key),
+            key
+        )
+
+        if key == "connectors":
+            connector_resources = inventory.get(
+                "connector_resources", []
+            )
+
+            if connector_resources:
+                count = len(connector_resources)
+
+        display_count = (
+            str(count)
+            if count is not None
+            else "Unavailable"
+        )
+
+        cols[index % 4].metric(
+            label,
+            display_count
+        )
+
+    # --------------------------------------------------------
+    # Verified IDs
+    # --------------------------------------------------------
+
+    st.markdown("#### Discovered resource IDs")
+
+    st.write(
+        "Environment ID:",
+        inventory.get("discovered_environment_id")
+        or "Unavailable"
+    )
+
+    st.write(
+        "Kafka cluster ID:",
+        inventory.get("discovered_cluster_id")
+        or "Unavailable"
+    )
+
+    connector_resources = inventory.get(
+        "connector_resources", []
+    )
+
+    if connector_resources:
+
+        connector_df = pd.DataFrame([
+            {
+                "Connector name": item.get("name"),
+                "Connector ID": item.get("id"),
+                "Resource type": item.get("resource_type")
+            }
+            for item in connector_resources
+        ])
+
+        st.dataframe(
+            connector_df,
+            use_container_width=True,
+            hide_index=True
+        )
+
+    else:
+        st.warning(
+            "Connector IDs could not be retrieved. "
+            "Check the Connect API discovery warning."
+        )
+
+    if st.session_state.discovery_errors:
+
+        with st.expander("Resource discovery warnings"):
+
+            st.dataframe(
+                pd.DataFrame(
+                    st.session_state.discovery_errors
+                ),
+                use_container_width=True
+            )
+
+    with st.expander("View raw resource inventory"):
+
+        for key, payload in inventory.items():
+
+            st.markdown(
+                f"**{key.replace('_', ' ').title()}**"
+            )
+
+            display_mcp_response(payload)
+
+
+# ============================================================
+# BILLING DASHBOARD
+# ============================================================
+
+if st.session_state.normalized_records is not None:
+
+    st.subheader("Billing and resource correlation")
+
+    reconciliation = st.session_state.reconciliation or {}
+
+    cols = st.columns(4)
+
+    cols[0].metric(
+        "Billing total",
+        f"${reconciliation['billing_total']:,.4f}"
+    )
+
+    cols[1].metric(
+        "Matched resources",
+        f"${reconciliation['matched_resource_total']:,.4f}"
+    )
+
+    cols[2].metric(
+        "Unallocated",
+        f"${reconciliation['unallocated_total']:,.4f}"
+    )
+
+    cols[3].metric(
+        "Unmatched resource IDs",
+        f"${reconciliation['unmatched_resource_total']:,.4f}"
+    )
+
+    st.caption(
+        f"{reconciliation['record_count']} "
+        "billing line items retrieved."
+    )
+
+    difference = reconciliation[
+        "reconciliation_difference"
+    ]
+
+    if abs(difference) < 0.000001:
+        st.success("Billing reconciliation passed.")
+
+    else:
+        st.warning(
+            f"Reconciliation difference: ${difference:,.6f}"
+        )
+
+    # --------------------------------------------------------
+    # Resource cost summary
+    # --------------------------------------------------------
+
+    st.markdown("#### Resource cost summary")
+
+    summary = st.session_state.resource_summary
+
+    if summary is not None and not summary.empty:
+
+        st.dataframe(
+            summary.style.format({
+                "Amount": "${:,.6f}"
+            }),
+            use_container_width=True,
+            hide_index=True
+        )
+
+    else:
+        st.info("No billing records found.")
+
+    # --------------------------------------------------------
+    # Billing line items
+    # --------------------------------------------------------
+
+    st.markdown("#### Billing line items")
+
+    normalized_df = pd.DataFrame([
+        {
+            key: value
+            for key, value in row.items()
+            if key != "raw_record"
+        }
+        for row in st.session_state.normalized_records
+    ])
+
+    if not normalized_df.empty:
+
+        st.dataframe(
+            normalized_df.drop(
+                columns=["record_number"],
+                errors="ignore"
+            ),
+            use_container_width=True,
+            hide_index=True
+        )
+
+    # --------------------------------------------------------
+    # Unmatched resources
+    # --------------------------------------------------------
+
+    unmatched_df = normalized_df[
+        normalized_df["attribution_status"]
+        == "Billing resource ID not found in inventory"
+    ]
+
+    if not unmatched_df.empty:
+
+        with st.expander("Investigate unmatched billing resources"):
+
+            st.warning(
+                "These billing resource IDs were not found "
+                "in the currently discovered inventory. "
+                "They may represent historical resources."
+            )
+
+            st.dataframe(
+                unmatched_df[
+                    [
+                        "billing_resource_name",
+                        "resource_id",
+                        "product",
+                        "line_type",
+                        "amount"
+                    ]
+                ],
+                use_container_width=True,
+                hide_index=True
+            )
+
+    # --------------------------------------------------------
+    # Raw billing data
+    # --------------------------------------------------------
+
+    with st.expander("View original billing records"):
+
+        display_mcp_response(
+            st.session_state.billing_records
+        )
+
+    with st.expander("View reconciliation details"):
+
+        st.json(reconciliation)
+
+    # --------------------------------------------------------
+    # Downloads
+    # --------------------------------------------------------
+
+    st.download_button(
+        "Download normalized billing CSV",
+        data=normalized_df.to_csv(index=False).encode("utf-8"),
+        file_name="billing_normalized.csv",
+        mime="text/csv"
+    )
+
+    st.download_button(
+        "Download raw billing JSON",
+        data=json.dumps(
+            st.session_state.billing_records,
+            indent=2
+        ).encode("utf-8"),
+        file_name="billing_raw.json",
+        mime="application/json"
+    )
+
+
+# ============================================================
+# ATTRIBUTION POLICY
 # ============================================================
 
 st.divider()
+
 st.caption(
-    "Confluent FinOps Explorer | Read-only MCP resource discovery | "
-    "Organization-wide Billing REST API | Exact-ID cost correlation"
+    "Only exact billing resource-ID matches are treated as "
+    "resource-level costs. Billing records without resource IDs "
+    "remain unallocated. Billing resource IDs absent from the "
+    "discovered inventory are reported as unmatched. "
+    "Historical resource IDs are not attributed to current "
+    "resources based on display names. Topic-level usage "
+    "allocation will be treated separately as an estimate, "
+    "not actual billing."
 )
