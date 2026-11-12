@@ -98,6 +98,18 @@ HTTP_TIMEOUT = int(os.getenv("HTTP_TIMEOUT_SECONDS", "30"))
 MAX_DAYS_PER_BILLING_REQUEST = 31
 MAX_CONTEXT_ROWS = 200
 
+# Previously verified Confluent resource-ID mapping. The connector config
+# endpoint returns the connector name/configuration but not its lcc-* ID.
+# Apply this mapping only while the corresponding connector is present in the
+# live inventory; never infer an ID from a display name alone.
+VERIFIED_RESOURCE_ID_MAPPINGS = {
+    "lcc-yokxw9p": {
+        "name": "sample_data",
+        "resource_type": "connector",
+        "evidence": "previously verified resource-ID mapping",
+    },
+}
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(name)s: %(message)s",
@@ -695,6 +707,19 @@ def calculate_summary(
     inventory_ids = {
         row["resource_id"] for row in inventory if row["resource_id"]
     }
+    # The current get-connector-config response exposes `name` and config
+    # properties, but not the connector resource ID. Use only the explicit,
+    # previously verified ID mapping, and only if that connector is present
+    # in the freshly retrieved inventory.
+    live_inventory_names = {
+        str(row.get("name")) for row in inventory if row.get("name")
+    }
+    verified_mapping_ids = {
+        resource_id
+        for resource_id, mapping in VERIFIED_RESOURCE_ID_MAPPINGS.items()
+        if mapping.get("name") in live_inventory_names
+    }
+    verified_inventory_ids = inventory_ids | verified_mapping_ids
 
     promo_rows = [
         row for row in billing
@@ -737,10 +762,12 @@ def calculate_summary(
 
     for item in grouped.values():
         rid = item["resource_id"]
-        if not inventory_ids:
-            status = "not verified (inventory IDs unavailable)"
+        if not inventory:
+            status = "not verified (inventory unavailable)"
         elif rid in inventory_ids:
             status = "matched by exact resource ID"
+        elif rid in verified_mapping_ids:
+            status = "matched by previously verified resource-ID mapping"
         else:
             status = "unmatched (possibly historical)"
 
@@ -751,7 +778,7 @@ def calculate_summary(
         }
         resources.append(result)
 
-        if inventory_ids and rid not in inventory_ids:
+        if inventory and rid not in verified_inventory_ids:
             unmatched.append(result)
 
     resources.sort(key=lambda row: row["amount"], reverse=True)
@@ -845,7 +872,7 @@ facts. Do not use or refer to Confluent product documentation.
 Rules:
 - Never invent amounts, resource IDs, names, usage, or billing periods.
 - Use the exact totals calculated by Python.
-- Match billing and inventory only by exact resource IDs, never by names.
+- Match billing and inventory by exact resource IDs. A previously verified resource-ID mapping may be used only when its mapped resource name is present in the current live inventory; never create a mapping from names alone.
 - Keep unmatched/historical resource IDs visible as unmatched.
 - If inventory retrieval failed or returned no IDs, say matching is unverified.
 - Keep promo credits negative and unallocated.

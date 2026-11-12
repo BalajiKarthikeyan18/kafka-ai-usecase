@@ -1,10 +1,10 @@
 [
   {
     "role": "user",
-    "content": "Run MCP list-configured-connections and show the complete response, including connection IDs and available tools. Do not modify anything."
+    "content": "Analyse the sample_data connector's configuration and explain which settings could influence its billing costs."
   },
   {
     "role": "assistant",
-    "content": "I am a FinOps assistant and my scope is limited to billing, expenditure, resource-level costs, usage charges, promo credits, resource reconciliation, and cost optimization.\n\nI do not have the capability to execute commands like `MCP list-configured-connections` or retrieve live operational data from your Confluent Cloud environment. My function is to help you understand your costs based on the financial data provided to me."
+    "content": "Based on the live FinOps account data provided, the specific configuration settings for the `sample_data` connector are not available. Therefore, it's not possible to analyze *its specific settings* to explain how they influence billing costs.\n\nHowever, we can see the actual billed amounts for `sample_data` connectors from your billing data:"
   }
 ]
