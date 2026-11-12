@@ -1,0 +1,11 @@
+[
+  {
+    "role": "user",
+    "content": "What is my total Confluent Cloud expenditure?"
+  },
+  {
+    "role": "assistant",
+    "content": "Unable to answer: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://aistudio.google.com/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/embed_content_free_tier_requests, limit: 100, model: gemini-embedding-1.0, description: Embed content requests per minute limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits.\nPlease retry in 45.441617108s. [links {\n  description: \"Learn more about Gemini API quotas\"\n  url: \"https://aistudio.google.com/docs/rate-limits\"\n}\n, violations {\n  description: \"Embed content requests per minute limit exceeded on Free Tier. See https://aistudio.google.com/docs/rate-limits.\"\n  quota_metric: \"generativelanguage.googleapis.com/embed_content_free_tier_requests\"\n  quota_id: \"EmbedContentRequestsPerMinutePerUserPerProjectPerModel-FreeTier\"\n  quota_dimensions {\n    key: \"model\"\n    value: \"gemini-embedding-1.0\"\n  }\n  quota_dimensions {\n    key: \"location\"\n    value: \"global\"\n  }\n  quota_value: 100\n}\n, retry_delay {\n  seconds: 45\n}\n]",
+    "sources": []
+  }
+]

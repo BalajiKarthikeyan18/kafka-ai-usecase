@@ -4,3 +4,7 @@ pandas
 mcp
 streamlit
 requests
+google-generativeai
+beautifulsoup4
+numpy
+faiss-cpu

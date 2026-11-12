@@ -1,0 +1,3211 @@
+{
+  "mcp_config_path": "D:\\JLR\\AI USECASE\\config.yaml",
+  "tool_count": 49,
+  "tools": [
+    {
+      "name": "list-topics",
+      "description": "List all topics in the Kafka cluster.",
+      "raw_tool_definition": {
+        "name": "list-topics",
+        "title": null,
+        "description": "List all topics in the Kafka cluster.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "cluster_id": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "create-topics",
+      "description": "Create one or more Kafka topics with an optional partition count and replication factor.",
+      "raw_tool_definition": {
+        "name": "create-topics",
+        "title": null,
+        "description": "Create one or more Kafka topics with an optional partition count and replication factor.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "topics": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "topic": {
+                    "type": "string",
+                    "description": "Name of the Kafka topic to create"
+                  },
+                  "numPartitions": {
+                    "description": "Number of partitions for the topic. If not specified, the broker default is used.",
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "replicationFactor": {
+                    "description": "Replication factor for the topic. If not specified, the broker default is used. Confluent Cloud clusters only ever support a value of 3 (or omit this to take the default); Confluent Platform or other clusters may accept other values.",
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "topic"
+                ]
+              }
+            },
+            "cluster_id": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "topics"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "delete-topics",
+      "description": "Delete the topic with the given names.",
+      "raw_tool_definition": {
+        "name": "delete-topics",
+        "title": null,
+        "description": "Delete the topic with the given names.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "topicNames": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "description": "Names of kafka topics to delete"
+              }
+            },
+            "cluster_id": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "topicNames"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "produce-message",
+      "description": "Produce records to a Kafka topic. Supports Confluent Schema Registry serialization (AVRO, JSON, PROTOBUF) for both key and value, plus optional record-level partition, timestamp, and headers for faithful reproduction of records across clusters.\n\nBefore producing, check if the topic has a registered schema for <topicName>-value and <topicName>-key. If a schema exists, set useSchemaRegistry to true and specify the appropriate schemaType. If the topic does not exist, it can be created via the create-topics tool.",
+      "raw_tool_definition": {
+        "name": "produce-message",
+        "title": null,
+        "description": "Produce records to a Kafka topic. Supports Confluent Schema Registry serialization (AVRO, JSON, PROTOBUF) for both key and value, plus optional record-level partition, timestamp, and headers for faithful reproduction of records across clusters.\n\nBefore producing, check if the topic has a registered schema for <topicName>-value and <topicName>-key. If a schema exists, set useSchemaRegistry to true and specify the appropriate schemaType. If the topic does not exist, it can be created via the create-topics tool.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "topicName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the kafka topic to produce the message to"
+            },
+            "value": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {}
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ],
+                  "description": "The payload to produce. When using schema registry, this should match the schema: an object for record schemas, or a primitive (string/number/boolean) for top-level primitive schemas such as Avro long. Without schema registry, a string is sent raw and anything else is JSON-encoded."
+                },
+                "useSchemaRegistry": {
+                  "default": false,
+                  "description": "If true, use schema registry for serialization. If false, send as raw string/JSON.",
+                  "type": "boolean"
+                },
+                "schemaType": {
+                  "description": "Schema type to use. If omitted, sends as raw string/JSON.",
+                  "type": "string",
+                  "enum": [
+                    "AVRO",
+                    "JSON",
+                    "PROTOBUF"
+                  ]
+                },
+                "schema": {
+                  "description": "Schema definition to register (as JSON string for AVRO/JSON, or .proto for PROTOBUF). If omitted, uses latest registered schema.",
+                  "type": "string"
+                },
+                "messageName": {
+                  "description": "Fully-qualified Protobuf message type to encode the payload as (e.g. com.example.User). Required when schemaType is PROTOBUF; ignored otherwise. Payload keys may use either the proto field name (e.g. user_id) or its camelCase JSON name (e.g. userId).",
+                  "type": "string"
+                },
+                "subject": {
+                  "description": "Schema Registry subject. Defaults to {topicName}-value or {topicName}-key.",
+                  "type": "string"
+                },
+                "normalize": {
+                  "type": "boolean"
+                },
+                "schemaIdLocation": {
+                  "default": "payload",
+                  "description": "Where the Schema Registry schema identifier is written on the wire when useSchemaRegistry is true. \"payload\" (default) embeds the integer schema ID as magic bytes at the front of the serialized payload — the standard Confluent wire format. \"header\" writes the schema GUID (UUID) to the __value_schema_id / __key_schema_id Kafka record header and leaves the payload as bare serialized bytes; the matching consume-messages decode reads it back from the header. Ignored when useSchemaRegistry is false.",
+                  "type": "string",
+                  "enum": [
+                    "payload",
+                    "header"
+                  ]
+                }
+              },
+              "required": [
+                "message"
+              ]
+            },
+            "key": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {}
+                    },
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    }
+                  ],
+                  "description": "The payload to produce. When using schema registry, this should match the schema: an object for record schemas, or a primitive (string/number/boolean) for top-level primitive schemas such as Avro long. Without schema registry, a string is sent raw and anything else is JSON-encoded."
+                },
+                "useSchemaRegistry": {
+                  "default": false,
+                  "description": "If true, use schema registry for serialization. If false, send as raw string/JSON.",
+                  "type": "boolean"
+                },
+                "schemaType": {
+                  "description": "Schema type to use. If omitted, sends as raw string/JSON.",
+                  "type": "string",
+                  "enum": [
+                    "AVRO",
+                    "JSON",
+                    "PROTOBUF"
+                  ]
+                },
+                "schema": {
+                  "description": "Schema definition to register (as JSON string for AVRO/JSON, or .proto for PROTOBUF). If omitted, uses latest registered schema.",
+                  "type": "string"
+                },
+                "messageName": {
+                  "description": "Fully-qualified Protobuf message type to encode the payload as (e.g. com.example.User). Required when schemaType is PROTOBUF; ignored otherwise. Payload keys may use either the proto field name (e.g. user_id) or its camelCase JSON name (e.g. userId).",
+                  "type": "string"
+                },
+                "subject": {
+                  "description": "Schema Registry subject. Defaults to {topicName}-value or {topicName}-key.",
+                  "type": "string"
+                },
+                "normalize": {
+                  "type": "boolean"
+                },
+                "schemaIdLocation": {
+                  "default": "payload",
+                  "description": "Where the Schema Registry schema identifier is written on the wire when useSchemaRegistry is true. \"payload\" (default) embeds the integer schema ID as magic bytes at the front of the serialized payload — the standard Confluent wire format. \"header\" writes the schema GUID (UUID) to the __value_schema_id / __key_schema_id Kafka record header and leaves the payload as bare serialized bytes; the matching consume-messages decode reads it back from the header. Ignored when useSchemaRegistry is false.",
+                  "type": "string",
+                  "enum": [
+                    "payload",
+                    "header"
+                  ]
+                }
+              },
+              "required": [
+                "message"
+              ]
+            },
+            "cluster_id": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            },
+            "partition": {
+              "description": "Target partition number. If omitted, the producer's partitioner picks one — hashing the record key when one is set, or choosing a partition otherwise (random by default under librdkafka).",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "timestamp": {
+              "description": "Record timestamp: a Date.parse-able date-time string (ISO 8601 recommended, e.g. \"2026-05-14T17:00:00Z\") or a non-negative integer ms-since-epoch number. If omitted, the record is stamped with the producer client's current time (CreateTime); a topic configured for LogAppendTime instead has the broker override the timestamp on append.",
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              ]
+            },
+            "headers": {
+              "description": "Kafka record headers as a map of name to a string or array of strings (multi-valued). Sent as raw headers, independent of schema-registry serialization of the key/value.",
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          "required": [
+            "topicName",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "consume-messages",
+      "description": "Consume messages from Kafka topics. Optionally restrict to a partition, start from an offset, timestamp, earliest, latest, or tailmost pre-existing messages. Auto-deserializes Schema Registry messages (AVRO/JSON/PROTOBUF) when SR is configured on the connection; pass `valueFormat: {disableSchemaRegistry: true}` (or `keyFormat`) to skip decoding per side.",
+      "raw_tool_definition": {
+        "name": "consume-messages",
+        "title": null,
+        "description": "Consume messages from Kafka topics. Optionally restrict to a partition, start from an offset, timestamp, earliest, latest, or tailmost pre-existing messages. Auto-deserializes Schema Registry messages (AVRO/JSON/PROTOBUF) when SR is configured on the connection; pass `valueFormat: {disableSchemaRegistry: true}` (or `keyFormat`) to skip decoding per side.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "topics": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Kafka topic name to consume from."
+                  },
+                  "partition": {
+                    "description": "Optional. Restrict consumption to this partition (0-indexed). Other partitions in the topic are paused after assignment. Omit to consume all partitions of the topic.",
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "start": {
+                    "default": "earliest",
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "const": "earliest"
+                      },
+                      {
+                        "type": "string",
+                        "const": "latest"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "offset": {
+                            "type": "string",
+                            "pattern": "^\\d+$",
+                            "description": "Absolute starting offset within the partition, as a digit-only string."
+                          }
+                        },
+                        "required": [
+                          "offset"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "timestamp": {
+                            "anyOf": [
+                              {
+                                "type": "string",
+                                "format": "date-time",
+                                "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$"
+                              },
+                              {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              }
+                            ],
+                            "description": "ISO 8601 timestamp (e.g. \"2026-05-14T17:00:00Z\" or \"2026-05-14T13:00:00-04:00\") or ms-since-epoch number. The broker resolves this to a per-partition offset."
+                          }
+                        },
+                        "required": [
+                          "timestamp"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "tail": {
+                            "type": "integer",
+                            "exclusiveMinimum": 0,
+                            "maximum": 9007199254740991,
+                            "description": "Consume the most recent N already-written messages from this partition. REQUIRES `partition` to be set on the same topic entry — there is no implicit partition default; consumption is single-partition only. N must be a positive integer. The consumer seeks to max(lowWatermark, highWatermark - N) and returns immediately with whatever is already there — it does not block waiting for new writes."
+                          }
+                        },
+                        "required": [
+                          "tail"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ],
+                    "description": "Where to begin consuming this topic. Use 'earliest' for the entire retained history; 'latest' for newly-produced messages only; {offset: 'N'} for an absolute partition offset (requires `partition`); {timestamp: '...'} to seek to the broker-resolved offset for a point in time; or {tail: N} for the last N already-written messages on the partition (requires `partition`, returns without waiting for new traffic)."
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              },
+              "description": "Topics to consume from. Each entry is an object with at least `name` (the Kafka topic name). Example simple call: [{name: \"orders\"}]. The `partition` and `start` fields let callers restrict to a specific partition and/or pick where in the topic to begin consuming (e.g. [{name: \"orders\", partition: 0, start: {offset: \"42\"}}], [{name: \"orders\", start: {timestamp: \"2026-05-14T17:00:00Z\"}}])."
+            },
+            "maxMessages": {
+              "default": 10,
+              "description": "Maximum number of messages to consume before stopping.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "timeoutMs": {
+              "default": 10000,
+              "description": "Maximum time in milliseconds to wait for messages before stopping.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "valueFormat": {
+              "default": {
+                "disableSchemaRegistry": false
+              },
+              "description": "VALUE format. Default: auto-decode via Schema Registry when configured. Set `disableSchemaRegistry: true` for raw UTF-8.",
+              "type": "object",
+              "properties": {
+                "disableSchemaRegistry": {
+                  "default": false,
+                  "description": "Set to true to skip Schema Registry decoding and return raw UTF-8 bytes. When false (the default), messages are auto-decoded via the registered AVRO / JSON / PROTOBUF schema if the connection has Schema Registry configured and a schema exists for the subject; otherwise left as raw bytes.",
+                  "type": "boolean"
+                },
+                "subject": {
+                  "description": "Schema registry subject. Defaults to '<topic>-value' or '<topic>-key'.",
+                  "type": "string"
+                }
+              }
+            },
+            "keyFormat": {
+              "default": {
+                "disableSchemaRegistry": false
+              },
+              "description": "KEY format. Default: auto-decode via Schema Registry when configured. Set `disableSchemaRegistry: true` for raw UTF-8.",
+              "type": "object",
+              "properties": {
+                "disableSchemaRegistry": {
+                  "default": false,
+                  "description": "Set to true to skip Schema Registry decoding and return raw UTF-8 bytes. When false (the default), messages are auto-decoded via the registered AVRO / JSON / PROTOBUF schema if the connection has Schema Registry configured and a schema exists for the subject; otherwise left as raw bytes.",
+                  "type": "boolean"
+                },
+                "subject": {
+                  "description": "Schema registry subject. Defaults to '<topic>-value' or '<topic>-key'.",
+                  "type": "string"
+                }
+              }
+            },
+            "cluster_id": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "topics"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-partition-offsets",
+      "description": "Return per-partition low/high watermarks and message counts for a Kafka topic. Use this to size a backfill, measure lag relative to a known offset, or check whether a topic is still receiving writes — without consuming. Pass `partition` to restrict the response to a single partition.",
+      "raw_tool_definition": {
+        "name": "get-partition-offsets",
+        "title": null,
+        "description": "Return per-partition low/high watermarks and message counts for a Kafka topic. Use this to size a backfill, measure lag relative to a known offset, or check whether a topic is still receiving writes — without consuming. Pass `partition` to restrict the response to a single partition.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "topicName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the Kafka topic to fetch partition offsets for."
+            },
+            "partition": {
+              "description": "Optional. Restrict the response to this partition (0-indexed). Omit to return every partition of the topic.",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "cluster_id": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "topicName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-consumer-groups",
+      "description": "List consumer groups on a Kafka cluster — wraps the broker's listGroups admin call. Optional filters narrow the result server-side. Response carries one entry per group with groupId, state, type, protocolType, and isSimpleConsumerGroup, plus an errors array of any per-broker partial failures.",
+      "raw_tool_definition": {
+        "name": "list-consumer-groups",
+        "title": null,
+        "description": "List consumer groups on a Kafka cluster — wraps the broker's listGroups admin call. Optional filters narrow the result server-side. Response carries one entry per group with groupId, state, type, protocolType, and isSimpleConsumerGroup, plus an errors array of any per-broker partial failures.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "matchStates": {
+              "description": "Filter to groups in any of these states. Omit to return all. Options: \"Stable\" (live), \"Empty\" (orphaned), \"Dead\", \"PreparingRebalance\", \"CompletingRebalance\", \"Unknown\".",
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "Unknown",
+                  "PreparingRebalance",
+                  "CompletingRebalance",
+                  "Stable",
+                  "Dead",
+                  "Empty"
+                ]
+              }
+            },
+            "matchType": {
+              "description": "Filter to groups of this protocol type. Omit to return both. Options: \"Consumer\" (new, KIP-848), \"Classic\" (legacy generation-based).",
+              "type": "string",
+              "enum": [
+                "Classic",
+                "Consumer"
+              ]
+            },
+            "cluster_id": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "describe-consumer-group",
+      "description": "Describe a single consumer group on a Kafka cluster. Returns the group's state, type, protocol, partition assignor, coordinator, and per-member assignment as a flat array of {topic, partition} pairs.",
+      "raw_tool_definition": {
+        "name": "describe-consumer-group",
+        "title": null,
+        "description": "Describe a single consumer group on a Kafka cluster. Returns the group's state, type, protocol, partition assignor, coordinator, and per-member assignment as a flat array of {topic, partition} pairs.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Consumer group ID to describe. Discover existing group IDs via list-consumer-groups."
+            },
+            "cluster_id": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "groupId"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-consumer-group-lag",
+      "description": "Compute live offset lag for a single Kafka consumer group. Returns per-(topic, partition) {committedOffset, highWatermark, lag} rows and a total lag count across the group. Pass `topics` to restrict the response to specific topics; omit to compute lag for every topic the group has touched. Partitions the group has never committed to surface with `committedOffset: null` and `lag: null` and are excluded from `totalLag`.",
+      "raw_tool_definition": {
+        "name": "get-consumer-group-lag",
+        "title": null,
+        "description": "Compute live offset lag for a single Kafka consumer group. Returns per-(topic, partition) {committedOffset, highWatermark, lag} rows and a total lag count across the group. Pass `topics` to restrict the response to specific topics; omit to compute lag for every topic the group has touched. Partitions the group has never committed to surface with `committedOffset: null` and `lag: null` and are excluded from `totalLag`.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Consumer group ID to compute lag for. Discover groups via list-consumer-groups."
+            },
+            "topics": {
+              "description": "Restrict lag computation to these topics. Omit to compute lag for every topic the group has committed offsets on.",
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "cluster_id": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "groupId"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-compute-pools",
+      "description": "Get the Flink compute pools in the Confluent Cloud environment. Paginated; if the response includes a nextPageToken, pass it back as pageToken to fetch additional pages.",
+      "raw_tool_definition": {
+        "name": "list-compute-pools",
+        "title": null,
+        "description": "Get the Flink compute pools in the Confluent Cloud environment. Paginated; if the response includes a nextPageToken, pass it back as pageToken to fetch additional pages.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the compute pools. Discover via list-environments",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Maximum compute pools to return in this response. Server-side default applies if omitted.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "pageToken": {
+              "description": "Opaque pagination token from a previous response's _meta.nextPageToken. Omit on first request.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "flink"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-connectors",
+      "description": "Retrieve a list of \"names\" of the active connectors. You can then make a read request for a specific connector by name.",
+      "raw_tool_definition": {
+        "name": "list-connectors",
+        "title": null,
+        "description": "Retrieve a list of \"names\" of the active connectors. You can then make a read request for a specific connector by name.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "create-connector",
+      "description": "Create a new connector. Returns the new connector information if successful.",
+      "raw_tool_definition": {
+        "name": "create-connector",
+        "title": null,
+        "description": "Create a new connector. Returns the new connector information if successful.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The name of the connector to create."
+            },
+            "connectorConfig": {
+              "type": "object",
+              "properties": {
+                "connector.class": {
+                  "type": "string",
+                  "description": "Required for Managed Connector, Ignored for Custom Connector. The connector class name, e.g., BigQuerySink, GcsSink, etc."
+                },
+                "confluent.connector.type": {
+                  "default": "MANAGED",
+                  "description": "Required for Custom Connector. The connector type",
+                  "type": "string"
+                },
+                "confluent.custom.plugin.id": {
+                  "type": "string",
+                  "description": "Required for Custom Connector. The custom plugin id of custom connector"
+                },
+                "confluent.custom.connection.endpoints": {
+                  "type": "string",
+                  "description": "Optional for Custom Connector. Egress endpoint(s) for the connector"
+                },
+                "confluent.custom.schema.registry.auto": {
+                  "default": "FALSE",
+                  "description": "Optional for Custom Connector. Automatically add required schema registry properties",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "connector.class"
+              ],
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "connectorName",
+            "connectorConfig"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "delete-connector",
+      "description": "Delete an existing connector. Returns success message if deletion was successful.",
+      "raw_tool_definition": {
+        "name": "delete-connector",
+        "title": null,
+        "description": "Delete an existing connector. Returns success message if deletion was successful.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The name of the connector to delete."
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-connector-config",
+      "description": "Retrieve the full configuration map for a connector. Returns the flat config object the connector was created/updated with.",
+      "raw_tool_definition": {
+        "name": "get-connector-config",
+        "title": null,
+        "description": "Retrieve the full configuration map for a connector. Returns the flat config object the connector was created/updated with.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-connector-offsets",
+      "description": "Retrieve current offsets for a connector's tasks. Useful for detecting lag, stalled tasks, or assisting recovery.",
+      "raw_tool_definition": {
+        "name": "get-connector-offsets",
+        "title": null,
+        "description": "Retrieve current offsets for a connector's tasks. Useful for detecting lag, stalled tasks, or assisting recovery.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-connector-status",
+      "description": "Get the current state of a connector and its tasks (RUNNING, FAILED, PAUSED, UNASSIGNED) including failure traces if any.",
+      "raw_tool_definition": {
+        "name": "get-connector-status",
+        "title": null,
+        "description": "Get the current state of a connector and its tasks (RUNNING, FAILED, PAUSED, UNASSIGNED) including failure traces if any.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-connector-tasks",
+      "description": "List the tasks of a connector along with their configurations.",
+      "raw_tool_definition": {
+        "name": "get-connector-tasks",
+        "title": null,
+        "description": "List the tasks of a connector along with their configurations.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-connector-error-summary",
+      "description": "Summarize a connector's current errors. Projects Confluent Cloud's /status diagnostics (error_summary, validation_errors, errors_from_trace, override_message, failed task traces) into a compact, agent-friendly form. Returns a one-liner when the connector is healthy.",
+      "raw_tool_definition": {
+        "name": "get-connector-error-summary",
+        "title": null,
+        "description": "Summarize a connector's current errors. Projects Confluent Cloud's /status diagnostics (error_summary, validation_errors, errors_from_trace, override_message, failed task traces) into a compact, agent-friendly form. Returns a one-liner when the connector is healthy.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-connector-error-recommendations",
+      "description": "Get suggested remediation steps for a connector that has failed or is in an error state. Recommendations are generated server-side from the connector's recent failure traces and configuration. Returns a one-liner when no recommendations are available.",
+      "raw_tool_definition": {
+        "name": "get-connector-error-recommendations",
+        "title": null,
+        "description": "Get suggested remediation steps for a connector that has failed or is in an error state. Recommendations are generated server-side from the connector's recent failure traces and configuration. Returns a one-liner when no recommendations are available.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-connector-logs",
+      "description": "Retrieve recent log entries for a Confluent Cloud connector from the Cloud logging API. Defaults to the last hour of ERROR-level entries with truncated stacktraces. Use connectorId (lcc-...) to narrow by resource ID. Organization ID auto-resolves from GET /org/v2/organizations when not provided. Paginated: when the response includes a nextPageToken, call again with pageToken=<that value> to retrieve the next page.",
+      "raw_tool_definition": {
+        "name": "get-connector-logs",
+        "title": null,
+        "description": "Retrieve recent log entries for a Confluent Cloud connector from the Cloud logging API. Defaults to the last hour of ERROR-level entries with truncated stacktraces. Use connectorId (lcc-...) to narrow by resource ID. Organization ID auto-resolves from GET /org/v2/organizations when not provided. Paginated: when the response includes a nextPageToken, call again with pageToken=<that value> to retrieve the next page.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            },
+            "organizationId": {
+              "description": "The Confluent Cloud organization ID. Falls back to the connection's confluent_cloud.organization_id, then auto-resolves via GET /org/v2/organizations.",
+              "type": "string"
+            },
+            "connectorId": {
+              "description": "Optional connector resource ID (e.g. 'lcc-abc123'). When provided, narrows the log search by connector ID.",
+              "type": "string"
+            },
+            "levels": {
+              "description": "Log levels to include. Defaults to [\"ERROR\"] if not specified.",
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "ERROR",
+                  "WARN",
+                  "INFO",
+                  "DEBUG",
+                  "TRACE"
+                ]
+              }
+            },
+            "startTime": {
+              "description": "ISO 8601 start time (e.g. '2026-04-29T03:50:13Z'). Defaults to one hour before endTime.",
+              "type": "string"
+            },
+            "endTime": {
+              "description": "ISO 8601 end time (e.g. '2026-04-29T04:50:13Z'). Defaults to the current time.",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Maximum number of log entries to return per page (default 100, max 200).",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 200
+            },
+            "pageToken": {
+              "description": "Opaque pagination token from a prior call's nextPageToken response field. Pass to retrieve the next page of results.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "update-connector-config",
+      "description": "Update the configuration of an existing connector. Full-replace: omitted keys are removed and the connector is reconfigured (tasks restarted) with the supplied config. Returns the updated connector info.",
+      "raw_tool_definition": {
+        "name": "update-connector-config",
+        "title": null,
+        "description": "Update the configuration of an existing connector. Full-replace: omitted keys are removed and the connector is reconfigured (tasks restarted) with the supplied config. Returns the updated connector info.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            },
+            "connectorConfig": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "The flat connector configuration map. All values must be strings. This replaces the existing configuration; any keys you omit will be removed."
+            }
+          },
+          "required": [
+            "connectorName",
+            "connectorConfig"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "pause-connector",
+      "description": "Pause a running connector and its tasks. Idempotent.",
+      "raw_tool_definition": {
+        "name": "pause-connector",
+        "title": null,
+        "description": "Pause a running connector and its tasks. Idempotent.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "resume-connector",
+      "description": "Resume a paused connector and its tasks. Idempotent.",
+      "raw_tool_definition": {
+        "name": "resume-connector",
+        "title": null,
+        "description": "Resume a paused connector and its tasks. Idempotent.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "restart-connector",
+      "description": "Restart a connector and its tasks. Asynchronous; the connector will not transition state synchronously.",
+      "raw_tool_definition": {
+        "name": "restart-connector",
+        "title": null,
+        "description": "Restart a connector and its tasks. Asynchronous; the connector will not transition state synchronously.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "The unique identifier for the environment this resource belongs to.",
+              "type": "string"
+            },
+            "clusterId": {
+              "description": "The unique identifier for the Kafka cluster.",
+              "type": "string"
+            },
+            "connectorName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The unique name of the connector."
+            }
+          },
+          "required": [
+            "connectorName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "connect"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "search-topics-by-tag",
+      "description": "List all topics in the Kafka cluster with the specified tag.",
+      "raw_tool_definition": {
+        "name": "search-topics-by-tag",
+        "title": null,
+        "description": "List all topics in the Kafka cluster with the specified tag.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "topicTag": {
+              "description": "The tag we wish to search for",
+              "type": "string"
+            },
+            "limit": {
+              "default": 100,
+              "type": "number",
+              "maximum": 500,
+              "description": "The maximum number of topics to return."
+            },
+            "offset": {
+              "default": 0,
+              "type": "number",
+              "description": "The offset to start the search from. Used for pagination."
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the Schema Registry. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "catalog"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "search-topics-by-name",
+      "description": "List all topics in the Kafka cluster matching the specified name.",
+      "raw_tool_definition": {
+        "name": "search-topics-by-name",
+        "title": null,
+        "description": "List all topics in the Kafka cluster matching the specified name.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "topicName": {
+              "type": "string",
+              "description": "The topic name to search for"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the Schema Registry. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "topicName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "catalog"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "create-topic-tags",
+      "description": "Create new tag definitions in Confluent Cloud.",
+      "raw_tool_definition": {
+        "name": "create-topic-tags",
+        "title": null,
+        "description": "Create new tag definitions in Confluent Cloud.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "tags": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "tagName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Name of the tag to create"
+                  },
+                  "description": {
+                    "default": "Tag created via API",
+                    "type": "string",
+                    "description": "Description for the tag"
+                  }
+                },
+                "required": [
+                  "tagName"
+                ]
+              },
+              "description": "Array of tag definitions to create"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the Schema Registry. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "tags"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "catalog"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "delete-tag",
+      "description": "Delete a tag definition from Confluent Cloud.",
+      "raw_tool_definition": {
+        "name": "delete-tag",
+        "title": null,
+        "description": "Delete a tag definition from Confluent Cloud.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "tagName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the tag to delete"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the Schema Registry. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "tagName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "catalog"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "remove-tag-from-entity",
+      "description": "Remove tag from an entity in Confluent Cloud.",
+      "raw_tool_definition": {
+        "name": "remove-tag-from-entity",
+        "title": null,
+        "description": "Remove tag from an entity in Confluent Cloud.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "tagName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the tag to remove from the entity."
+            },
+            "typeName": {
+              "default": "kafka_topic",
+              "type": "string",
+              "minLength": 1,
+              "description": "Type of the entity"
+            },
+            "qualifiedName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Qualified name of the entity. If not provided, you can obtain it from using the search-topics-by-tag tool. example: \"lsrc-g2p81:lkc-xq8k7g:my-flights\""
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the Schema Registry. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "tagName",
+            "qualifiedName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "catalog"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "add-tags-to-topic",
+      "description": "Assign existing tags to Kafka topics in Confluent Cloud.",
+      "raw_tool_definition": {
+        "name": "add-tags-to-topic",
+        "title": null,
+        "description": "Assign existing tags to Kafka topics in Confluent Cloud.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "tagAssignments": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "entityType": {
+                    "default": "kafka_topic",
+                    "type": "string"
+                  },
+                  "entityName": {
+                    "type": "string",
+                    "description": "Qualified name of the entity. If not provided, you can obtain it from using the search-topics-by-name tool. example: \"lsrc-g2p81:lkc-xq8k7g:my-flights\""
+                  },
+                  "typeName": {
+                    "type": "string",
+                    "description": "Name of the tag to assign"
+                  }
+                },
+                "required": [
+                  "entityName",
+                  "typeName"
+                ]
+              },
+              "description": "Array of tag assignments to create"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the Schema Registry. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "tagAssignments"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "catalog"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-tags",
+      "description": "Retrieve all tags with definitions from Confluent Cloud Schema Registry.",
+      "raw_tool_definition": {
+        "name": "list-tags",
+        "title": null,
+        "description": "Retrieve all tags with definitions from Confluent Cloud Schema Registry.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the Schema Registry. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "catalog"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "alter-topic-config",
+      "description": "Alter topic configuration in Confluent Cloud.",
+      "raw_tool_definition": {
+        "name": "alter-topic-config",
+        "title": null,
+        "description": "Alter topic configuration in Confluent Cloud.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "topicName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the topic to alter"
+            },
+            "topicConfigs": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Configuration parameter name"
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Configuration parameter value"
+                  },
+                  "operation": {
+                    "type": "string",
+                    "enum": [
+                      "SET",
+                      "DELETE"
+                    ],
+                    "description": "Operation type"
+                  }
+                },
+                "required": [
+                  "name",
+                  "value",
+                  "operation"
+                ]
+              }
+            },
+            "validateOnly": {
+              "default": false,
+              "type": "boolean"
+            },
+            "clusterId": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environmentId": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "topicName",
+            "topicConfigs"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-clusters",
+      "description": "Get all clusters in the Confluent Cloud environment",
+      "raw_tool_definition": {
+        "name": "list-clusters",
+        "title": null,
+        "description": "Get all clusters in the Confluent Cloud environment",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "confluent-cloud"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-environments",
+      "description": "Get all environments in Confluent Cloud with pagination support",
+      "raw_tool_definition": {
+        "name": "list-environments",
+        "title": null,
+        "description": "Get all environments in Confluent Cloud with pagination support",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "pageToken": {
+              "description": "Token for the next page of environments",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "confluent-cloud"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "read-environment",
+      "description": "Get details of a specific environment by ID",
+      "raw_tool_definition": {
+        "name": "read-environment",
+        "title": null,
+        "description": "Get details of a specific environment by ID",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "environmentId": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The ID of the environment to retrieve"
+            }
+          },
+          "required": [
+            "environmentId"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "confluent-cloud"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-schemas",
+      "description": "List all schemas in the Schema Registry.",
+      "raw_tool_definition": {
+        "name": "list-schemas",
+        "title": null,
+        "description": "List all schemas in the Schema Registry.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "latestOnly": {
+              "default": true,
+              "type": "boolean",
+              "description": "If true, only return the latest version of each schema."
+            },
+            "subjectPrefix": {
+              "type": "string",
+              "description": "The prefix of the subject to list schemas for."
+            },
+            "deleted": {
+              "default": false,
+              "type": "boolean",
+              "description": "List deleted schemas. (Only used if latestOnly is false)"
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the Schema Registry. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "schema-registry"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "create-schema",
+      "description": "Register a new schema (or a new version of an existing schema) under a subject in the Schema Registry.",
+      "raw_tool_definition": {
+        "name": "create-schema",
+        "title": null,
+        "description": "Register a new schema (or a new version of an existing schema) under a subject in the Schema Registry.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the subject to register the schema under."
+            },
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The schema definition to register (the schema string itself)."
+            },
+            "schemaType": {
+              "type": "string",
+              "enum": [
+                "AVRO",
+                "JSON",
+                "PROTOBUF"
+              ],
+              "description": "The schema format. One of AVRO, JSON, or PROTOBUF."
+            },
+            "references": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "The reference name as used within this schema (e.g. the fully-qualified type name)."
+                  },
+                  "subject": {
+                    "type": "string",
+                    "description": "The subject of the referenced schema."
+                  },
+                  "version": {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991,
+                    "description": "The version of the referenced schema to bind to."
+                  }
+                },
+                "required": [
+                  "name",
+                  "subject",
+                  "version"
+                ]
+              },
+              "description": "Other registered schemas this schema references."
+            },
+            "normalize": {
+              "default": false,
+              "type": "boolean",
+              "description": "Whether to normalize the schema before registering. Default is false."
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the Schema Registry. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "subject",
+            "schema",
+            "schemaType"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "schema-registry"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "delete-schema",
+      "description": "Delete a schema subject or a specific version from the Schema Registry. If version is omitted, all versions of the subject are deleted.",
+      "raw_tool_definition": {
+        "name": "delete-schema",
+        "title": null,
+        "description": "Delete a schema subject or a specific version from the Schema Registry. If version is omitted, all versions of the subject are deleted.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the subject to delete."
+            },
+            "version": {
+              "type": "string",
+              "description": "Version of the schema to delete. Valid values are between [1,2^31-1] or the string \"latest\". If omitted, all versions of the subject are deleted."
+            },
+            "permanent": {
+              "default": false,
+              "type": "boolean",
+              "description": "Whether to perform a permanent (hard) delete. Default is false (soft delete)."
+            },
+            "environment_id": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the Schema Registry. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "subject"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": false,
+          "destructiveHint": true,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "schema-registry"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-topic-config",
+      "description": "Retrieve configuration details for a specific Kafka topic.",
+      "raw_tool_definition": {
+        "name": "get-topic-config",
+        "title": null,
+        "description": "Retrieve configuration details for a specific Kafka topic.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "topicName": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name of the topic to get configuration for"
+            },
+            "clusterId": {
+              "description": "Confluent Cloud logical Kafka cluster ID (lkc-...). Discover via list-clusters.",
+              "type": "string"
+            },
+            "environmentId": {
+              "description": "Confluent Cloud environment ID (env-...) that owns the cluster. Discover via list-environments.",
+              "type": "string"
+            }
+          },
+          "required": [
+            "topicName"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "kafka"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-billing-costs",
+      "description": "Retrieve billing cost data for a Confluent Cloud organization within a specified date range with pagination support",
+      "raw_tool_definition": {
+        "name": "list-billing-costs",
+        "title": null,
+        "description": "Retrieve billing cost data for a Confluent Cloud organization within a specified date range with pagination support",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "startDate": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "Start date for billing costs in YYYY-MM-DD format"
+            },
+            "endDate": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "End date for billing costs in YYYY-MM-DD format"
+            },
+            "pageSize": {
+              "description": "Number of results per page (max 1000)",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 1000
+            },
+            "pageToken": {
+              "description": "Token for the next page of results",
+              "type": "string"
+            }
+          },
+          "required": [
+            "startDate",
+            "endDate"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "billing"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "query-metrics",
+      "description": "Query Confluent Cloud metrics from the Telemetry API. IMPORTANT: Use the list-available-metrics tool first to discover valid metric names and filter fields — do not guess them. Supports Kafka, Flink, Connectors, and Schema Registry metrics with flexible filtering, aggregation, and grouping.",
+      "raw_tool_definition": {
+        "name": "query-metrics",
+        "title": null,
+        "description": "Query Confluent Cloud metrics from the Telemetry API. IMPORTANT: Use the list-available-metrics tool first to discover valid metric names and filter fields — do not guess them. Supports Kafka, Flink, Connectors, and Schema Registry metrics with flexible filtering, aggregation, and grouping.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "metric": {
+              "type": "string",
+              "description": "The metric name to query. Common Kafka metrics: \"io.confluent.kafka.server/received_bytes\", \"io.confluent.kafka.server/sent_bytes\", \"io.confluent.kafka.server/received_records\", \"io.confluent.kafka.server/sent_records\", \"io.confluent.kafka.server/retained_bytes\", \"io.confluent.kafka.server/consumer_lag_offsets\", \"io.confluent.kafka.server/request_count\". Common Flink metrics: \"io.confluent.flink/num_records_in\", \"io.confluent.flink/num_records_out\". Common Connector metrics: \"io.confluent.kafka.connect/sent_records\", \"io.confluent.kafka.connect/received_records\"."
+            },
+            "dataset": {
+              "default": "cloud",
+              "description": "The metrics dataset to query.",
+              "type": "string",
+              "enum": [
+                "cloud"
+              ]
+            },
+            "aggregation": {
+              "default": "SUM",
+              "description": "Aggregation function to apply to the metric values.",
+              "type": "string",
+              "enum": [
+                "SUM",
+                "MAX",
+                "AVG",
+                "MIN",
+                "COUNT"
+              ]
+            },
+            "filter": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "string"
+              },
+              "description": "Key-value pairs to filter results. Use \"resource.kafka.id\" for cluster ID (e.g. \"lkc-abc123\"), \"metric.topic\" for topic name (e.g. \"sensor-readings\"), \"metric.consumer_group_id\" for consumer group, \"resource.connector.id\" for connector ID, \"resource.environment.id\" for environment ID, \"resource.schema_registry.id\" for schema registry ID. For Kafka topic metrics, \"resource.kafka.id\" is required."
+            },
+            "granularity": {
+              "default": "PT1M",
+              "description": "Time granularity for the metric data points. Defaults to PT1M. Use PT1M or PT5M for intervals under a few hours, PT1H for day-scale queries, P1D for multi-day queries.",
+              "type": "string",
+              "enum": [
+                "PT1M",
+                "PT5M",
+                "PT15M",
+                "PT30M",
+                "PT1H",
+                "P1D",
+                "ALL"
+              ]
+            },
+            "interval": {
+              "type": "string",
+              "description": "Time range as two ISO 8601 timestamps separated by \"/\". Example: \"2024-01-01T00:00:00Z/2024-01-02T00:00:00Z\". Must include both start and end timestamps. Defaults to the last 1 hour if omitted. Do NOT pass a duration like \"PT1H\" — always use \"start/end\" format."
+            },
+            "group_by": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Label keys to group results by. Common keys: \"resource.kafka.id\" (by cluster), \"metric.topic\" (by topic), \"metric.partition\" (by partition), \"metric.consumer_group_id\" (by consumer group), \"metric.type\" (by request type). Returns separate time series for each group."
+            },
+            "limit": {
+              "default": 100,
+              "description": "Maximum number of data points to return (max 1000).",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 1000
+            }
+          },
+          "required": [
+            "metric"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "metrics"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-available-metrics",
+      "description": "List available Confluent Cloud metrics and their filter fields from the Telemetry API. Use this tool BEFORE query-metrics to discover valid metric names, resource filter fields, and grouping labels. This avoids guessing metric names.",
+      "raw_tool_definition": {
+        "name": "list-available-metrics",
+        "title": null,
+        "description": "List available Confluent Cloud metrics and their filter fields from the Telemetry API. Use this tool BEFORE query-metrics to discover valid metric names, resource filter fields, and grouping labels. This avoids guessing metric names.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "resource_type": {
+              "type": "string",
+              "enum": [
+                "kafka",
+                "connector",
+                "compute_pool",
+                "flink_statement",
+                "schema_registry",
+                "ksql"
+              ],
+              "description": "Filter metrics by resource type. Use \"kafka\" for Kafka cluster/topic metrics, \"connector\" for Kafka Connect metrics, \"compute_pool\" for Flink compute pool metrics, \"flink_statement\" for Flink statement metrics."
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "metrics"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "search-product-docs",
+      "description": "Search Confluent product documentation (docs.confluent.io, developer.confluent.io, support.confluent.io) by keyword.",
+      "raw_tool_definition": {
+        "name": "search-product-docs",
+        "title": null,
+        "description": "Search Confluent product documentation (docs.confluent.io, developer.confluent.io, support.confluent.io) by keyword.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Keyword or phrase to search for in Confluent product docs."
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum number of results to return (1-50, default 10).",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 50
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "docs"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "get-product-doc-page",
+      "description": "Fetch the full markdown content of a Confluent product documentation page. Accepts URLs under https://docs.confluent.io/, https://developer.confluent.io/, or https://support.confluent.io/. Use this after search-product-docs to read a result's full content.",
+      "raw_tool_definition": {
+        "name": "get-product-doc-page",
+        "title": null,
+        "description": "Fetch the full markdown content of a Confluent product documentation page. Accepts URLs under https://docs.confluent.io/, https://developer.confluent.io/, or https://support.confluent.io/. Use this after search-product-docs to read a result's full content.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Absolute URL of a page under https://docs.confluent.io/, https://developer.confluent.io/, or https://support.confluent.io/. Prefer URLs returned by search-product-docs."
+            }
+          },
+          "required": [
+            "url"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "docs"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-organizations",
+      "description": "List Confluent Cloud organizations the current credentials can see. Paginated; if the response includes a nextPageToken, pass it back as pageToken to fetch additional pages.",
+      "raw_tool_definition": {
+        "name": "list-organizations",
+        "title": null,
+        "description": "List Confluent Cloud organizations the current credentials can see. Paginated; if the response includes a nextPageToken, pass it back as pageToken to fetch additional pages.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "pageSize": {
+              "description": "Maximum organizations to return in this response. Server-side default applies if omitted.",
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "pageToken": {
+              "description": "Opaque pagination token from a previous response's _meta.nextPageToken. Omit on first request.",
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "confluent-cloud"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "explain-disabled-tools",
+      "description": "Call when the user asks why a tool is missing or unavailable (e.g., \"why can't I list Kafka topics?\", \"where are the Flink tools?\"). Returns disabled tools organized per connection — each connection's gaps bucketed by the config piece each tool is waiting on, so you can tell the user the exact YAML block or field to add (and, with more than one connection, which connection needs it). Pass group_by=\"category\" to bucket each connection's gaps by functional area (kafka, flink, schema-registry, …) instead of by missing config piece. Prefer this over guessing about credentials, network, or auth.",
+      "raw_tool_definition": {
+        "name": "explain-disabled-tools",
+        "title": null,
+        "description": "Call when the user asks why a tool is missing or unavailable (e.g., \"why can't I list Kafka topics?\", \"where are the Flink tools?\"). Returns disabled tools organized per connection — each connection's gaps bucketed by the config piece each tool is waiting on, so you can tell the user the exact YAML block or field to add (and, with more than one connection, which connection needs it). Pass group_by=\"category\" to bucket each connection's gaps by functional area (kafka, flink, schema-registry, …) instead of by missing config piece. Prefer this over guessing about credentials, network, or auth.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "group_by": {
+              "default": "reason",
+              "description": "Axis to bucket each connection's disabled tools by. \"reason\" (default) answers \"what config piece would unlock these?\" — each bucket is a ToolDisabledReason (MissingKafkaBlock, MissingFlinkBlock, …). \"category\" answers \"which functional area is offline?\" — each bucket is a ToolCategory (kafka, flink, schema-registry, …). Flip to \"category\" when triaging a misconfigured connection by functional area instead of by missing config piece.",
+              "type": "string",
+              "enum": [
+                "reason",
+                "category"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "mcp-server-diagnostics"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "list-configured-connections",
+      "description": "List every configured connection and the connection-routable tools you can invoke against each. The connection id (the map key) is the value to pass as the `connectionId` argument on tools that ask for one. Each connection also reports `readOnly`: when true, the connection is marked read-only and exposes only non-mutating tools. Connection-agnostic tools (e.g. docs and diagnostics that take no `connectionId`) are always available and appear in `tools/list`, not here. Call this when a tool offers a choice of connections, or to discover which connection supports the capability you need.",
+      "raw_tool_definition": {
+        "name": "list-configured-connections",
+        "title": null,
+        "description": "List every configured connection and the connection-routable tools you can invoke against each. The connection id (the map key) is the value to pass as the `connectionId` argument on tools that ask for one. Each connection also reports `readOnly`: when true, the connection is marked read-only and exposes only non-mutating tools. Connection-agnostic tools (e.g. docs and diagnostics that take no `connectionId`) are always available and appear in `tools/list`, not here. Call this when a tool offers a choice of connections, or to discover which connection supports the capability you need.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {},
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "mcp-server-diagnostics"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "config-help",
+      "description": "Call when the user wants to enable or unlock a specific tool (e.g. \"how do I enable the tableflow tools?\", \"what config does create-flink-statement need?\", \"why isn't list-topics showing up — fix it\"). Given a tool name, returns a copy-pasteable YAML snippet, per connection, that closes the gap between the current config and what that tool requires. Suggests only — it never edits your config file. Prefer explain-disabled-tools when the question is \"what's off and why?\" across all tools; prefer this when the user has a target tool in mind and wants the exact YAML to add.",
+      "raw_tool_definition": {
+        "name": "config-help",
+        "title": null,
+        "description": "Call when the user wants to enable or unlock a specific tool (e.g. \"how do I enable the tableflow tools?\", \"what config does create-flink-statement need?\", \"why isn't list-topics showing up — fix it\"). Given a tool name, returns a copy-pasteable YAML snippet, per connection, that closes the gap between the current config and what that tool requires. Suggests only — it never edits your config file. Prefer explain-disabled-tools when the question is \"what's off and why?\" across all tools; prefer this when the user has a target tool in mind and wants the exact YAML to add.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "tool": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The tool name exactly as it appears in tools/list (e.g. 'list-tableflow-topics', 'create-flink-statement') that you want to enable. config-help inspects every configured connection, finds the config gap each one is missing for this tool, and returns the YAML block to add to unlock it."
+            }
+          },
+          "required": [
+            "tool"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "mcp-server-diagnostics"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    },
+    {
+      "name": "describe-configured-connection",
+      "description": "Describe one configured connection by id: its non-secret config (type, endpoints, resource ids — never credentials), whether it is read-only, the tools you can invoke against it, and, for tools that are unavailable on it, the config gap or policy keeping each one off. Pass the connection id from 'list-configured-connections'. Call this to learn what a specific connection supports before routing a tool call to it.",
+      "raw_tool_definition": {
+        "name": "describe-configured-connection",
+        "title": null,
+        "description": "Describe one configured connection by id: its non-secret config (type, endpoints, resource ids — never credentials), whether it is read-only, the tools you can invoke against it, and, for tools that are unavailable on it, the config gap or policy keeping each one off. Pass the connection id from 'list-configured-connections'. Call this to learn what a specific connection supports before routing a tool call to it.",
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "connectionId": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The id of the configured connection to describe. One of the keys reported by 'list-configured-connections'."
+            }
+          },
+          "required": [
+            "connectionId"
+          ],
+          "additionalProperties": false
+        },
+        "execution": {
+          "taskSupport": "forbidden"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": {
+          "title": null,
+          "readOnlyHint": true,
+          "destructiveHint": null,
+          "idempotentHint": null,
+          "openWorldHint": null
+        },
+        "_meta": {
+          "category": "mcp-server-diagnostics"
+        }
+      },
+      "model_fields_set": [
+        "input_schema",
+        "annotations",
+        "name",
+        "meta",
+        "description",
+        "execution"
+      ]
+    }
+  ]
+}
