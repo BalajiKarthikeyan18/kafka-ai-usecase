@@ -234,6 +234,7 @@ def calculate_summary(billing_rows: list[dict[str, Any]], agent_result: dict[str
     }
 
 
+
 def _summary_context(summary: dict[str, Any]) -> str:
     lines = [
         "FINANCIAL SOURCE OF TRUTH: Confluent Billing REST API line items.",
@@ -243,35 +244,86 @@ def _summary_context(summary: dict[str, Any]) -> str:
         f"Net billed amount: {money(summary['net'])}",
         "Product totals:",
     ]
-    lines.extend(f"- {name}: {money(amount)}" for name, amount in summary["by_product"].items())
+
+    lines.extend(
+        f"- {name}: {money(amount)}"
+        for name, amount in summary["by_product"].items()
+    )
+
     lines.append("Billing line-type totals:")
-    lines.extend(f"- {name}: {money(amount)}" for name, amount in summary["by_line_type"].items())
+    lines.extend(
+        f"- {name}: {money(amount)}"
+        for name, amount in summary["by_line_type"].items()
+    )
+
     lines.append("Resource totals (exact resource ID matching only):")
+
     for row in summary["resources"][:MAX_CONTEXT_ROWS]:
         lines.append(
-            f"- ID={row['resource_id']}; name={row.get('resource_name')}; amount={money(row['amount'])}; "
-            f"products={','.join(row['products'])}; match={row['match_status']}"
+            f"- ID={row['resource_id']}; "
+            f"name={row.get('resource_name')}; "
+            f"amount={money(row['amount'])}; "
+            f"products={','.join(row['products'])}; "
+            f"match={row['match_status']}"
         )
+
     lines.append("Unallocated billing rows:")
+
     for row in summary["unallocated"][:MAX_CONTEXT_ROWS]:
         lines.append(
-            f"- line_type={row.get('line_type')}; product={row.get('product')}; "
-            f"amount={money(row['amount'])}; resource_id={row.get('resource_id')}"
+            f"- line_type={row.get('line_type')}; "
+            f"product={row.get('product')}; "
+            f"amount={money(row['amount'])}; "
+            f"resource_id={row.get('resource_id')}"
         )
-    lines.append("MCP inventory records (MCP is inventory/metadata evidence, not billing authority):")
+
+    lines.append(
+        "MCP inventory records (inventory and metadata evidence, not billing authority):"
+    )
+
     for row in summary["inventory"][:MAX_CONTEXT_ROWS]:
         lines.append(
-            f"- source_tool={row['source_tool']}; type inferred from tool; id={row.get('resource_id')}; "
-            f"name={row.get('name')}; environment={row.get('environment_id')}"
+            f"- source_tool={row['source_tool']}; "
+            f"id={row.get('resource_id')}; "
+            f"name={row.get('name')}; "
+            f"environment={row.get('environment_id')}; "
+            f"raw_metadata={json.dumps(row.get('raw', {}), ensure_ascii=False, default=str)[:3000]}"
         )
+
     agent = summary.get("agent_result", {})
+
     lines.append(f"MCP tools discovered: {agent.get('tool_count', 0)}")
-    lines.append("MCP tool calls executed:")
+    lines.append("MCP tool execution results:")
+
     for call in agent.get("results", []):
-        lines.append(f"- {call.get('tool')}: {call.get('purpose')}; args={json.dumps(call.get('arguments', {}), default=str)}")
+        result_text = json.dumps(
+            call.get("result"),
+            ensure_ascii=False,
+            default=str,
+        )
+
+        # Keep useful tool output while preventing excessive prompt size.
+        max_result_chars = 12000
+        if len(result_text) > max_result_chars:
+            result_text = (
+                result_text[:max_result_chars]
+                + "... [RESULT TRUNCATED]"
+            )
+
+        lines.append(
+            f"\nTOOL: {call.get('tool')}\n"
+            f"PURPOSE: {call.get('purpose')}\n"
+            f"ARGUMENTS: {json.dumps(call.get('arguments', {}), ensure_ascii=False, default=str)}\n"
+            f"ACTUAL MCP RESULT: {result_text}\n"
+        )
+
     if agent.get("errors"):
         lines.append("MCP tool errors:")
-        lines.extend(f"- {e.get('tool')}: {e.get('error')}" for e in agent["errors"])
+        lines.extend(
+            f"- {e.get('tool')}: {e.get('error')}"
+            for e in agent["errors"]
+        )
+
     return "\n".join(lines)
 
 
