@@ -1,0 +1,2147 @@
+{
+  "data": [
+    {
+      "amount": 0.2083,
+      "discount_amount": 0,
+      "end_date": "2026-11-02",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.2083,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 6,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-12dd205"
+      },
+      "start_date": "2026-11-01",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.0347,
+      "end_date": "2026-11-02",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.0347,
+      "start_date": "2026-11-01"
+    },
+    {
+      "amount": 0.6597,
+      "discount_amount": 0,
+      "end_date": "2026-11-03",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.6597,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 19,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-02",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.9341,
+      "end_date": "2026-11-03",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.9341,
+      "start_date": "2026-11-02"
+    },
+    {
+      "amount": 0.0011,
+      "discount_amount": 0,
+      "end_date": "2026-11-03",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0011,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.0450190557166934,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-02",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.27,
+      "discount_amount": 0,
+      "end_date": "2026-11-03",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NUM_CKUS",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.27,
+      "price": 0.135,
+      "product": "KAFKA",
+      "quantity": 2,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-02",
+      "unit": "CKU-hour"
+    },
+    {
+      "amount": 0.0001,
+      "discount_amount": 0,
+      "end_date": "2026-11-03",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0001,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 1.02757427567676,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-02",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0009,
+      "discount_amount": 0,
+      "end_date": "2026-11-03",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0009,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.018111604265868664,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-02",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0023,
+      "discount_amount": 0,
+      "end_date": "2026-11-03",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0023,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.04572636168450117,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-02",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-04",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-03",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8351,
+      "end_date": "2026-11-04",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8351,
+      "start_date": "2026-11-03"
+    },
+    {
+      "amount": 0.0004,
+      "discount_amount": 0,
+      "end_date": "2026-11-04",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0004,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.014613360166549683,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-03",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0004,
+      "discount_amount": 0,
+      "end_date": "2026-11-04",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0004,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 3.282333238230748,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-03",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0003,
+      "discount_amount": 0,
+      "end_date": "2026-11-04",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0003,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.005485553294420242,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-03",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0007,
+      "discount_amount": 0,
+      "end_date": "2026-11-04",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0007,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.014737018384039402,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-03",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-05",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-04",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8338,
+      "end_date": "2026-11-05",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8338,
+      "start_date": "2026-11-04"
+    },
+    {
+      "amount": 0.0004,
+      "discount_amount": 0,
+      "end_date": "2026-11-05",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0004,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 3.3671020345750384,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-04",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-06",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-05",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8338,
+      "end_date": "2026-11-06",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8338,
+      "start_date": "2026-11-05"
+    },
+    {
+      "amount": 0.0004,
+      "discount_amount": 0,
+      "end_date": "2026-11-06",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0004,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 3.3671020345750384,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-05",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-07",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-06",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8338,
+      "end_date": "2026-11-07",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8338,
+      "start_date": "2026-11-06"
+    },
+    {
+      "amount": 0.0004,
+      "discount_amount": 0,
+      "end_date": "2026-11-07",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0004,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 3.3671020345750384,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-06",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-08",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-07",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8338,
+      "end_date": "2026-11-08",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8338,
+      "start_date": "2026-11-07"
+    },
+    {
+      "amount": 0.0004,
+      "discount_amount": 0,
+      "end_date": "2026-11-08",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0004,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 3.3671020345750384,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-07",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-09",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-08",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8338,
+      "end_date": "2026-11-09",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8338,
+      "start_date": "2026-11-08"
+    },
+    {
+      "amount": 0.0004,
+      "discount_amount": 0,
+      "end_date": "2026-11-09",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0004,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 3.3639297021539187,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-08",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-10",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-09",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8337,
+      "end_date": "2026-11-10",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8337,
+      "start_date": "2026-11-09"
+    },
+    {
+      "amount": 0.0003,
+      "discount_amount": 0,
+      "end_date": "2026-11-10",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0003,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 2.7459057962168494,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-09",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-11",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-10",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8396,
+      "end_date": "2026-11-11",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8396,
+      "start_date": "2026-11-10"
+    },
+    {
+      "amount": 0.0012,
+      "discount_amount": 0,
+      "end_date": "2026-11-11",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0012,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.04646014142781496,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-10",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0001,
+      "discount_amount": 0,
+      "end_date": "2026-11-11",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0001,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 1.3063879078972132,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-10",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0026,
+      "discount_amount": 0,
+      "end_date": "2026-11-11",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0026,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.052139741368591785,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-10",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0024,
+      "discount_amount": 0,
+      "end_date": "2026-11-11",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0024,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.04712145961821079,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-10",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-12",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-11",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8387,
+      "end_date": "2026-11-12",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8387,
+      "start_date": "2026-11-11"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-12",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.05873990897089243,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-11",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0005,
+      "discount_amount": 0,
+      "end_date": "2026-11-12",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0005,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 4.349420467630667,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-11",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-12",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.012412830255925655,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-11",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0028,
+      "discount_amount": 0,
+      "end_date": "2026-11-12",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0028,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.05862024985253811,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-11",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-13",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-12",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.839,
+      "end_date": "2026-11-13",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.839,
+      "start_date": "2026-11-12"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-13",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.058710718527436256,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-12",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0008,
+      "discount_amount": 0,
+      "end_date": "2026-11-13",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0008,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 7.665552760895705,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-12",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-13",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.01246220525354147,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-12",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0028,
+      "discount_amount": 0,
+      "end_date": "2026-11-13",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0028,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.05858954321593046,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-12",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-14",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-13",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8394,
+      "end_date": "2026-11-14",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8394,
+      "start_date": "2026-11-13"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-14",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.058781432919204235,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-13",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0012,
+      "discount_amount": 0,
+      "end_date": "2026-11-14",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0012,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 10.979315615862566,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-13",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-14",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.012538732960820198,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-13",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0028,
+      "discount_amount": 0,
+      "end_date": "2026-11-14",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0028,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.05871013179421425,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-13",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-15",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-14",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8398,
+      "end_date": "2026-11-15",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8398,
+      "start_date": "2026-11-14"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-15",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.058957723900675774,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-14",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0016,
+      "discount_amount": 0,
+      "end_date": "2026-11-15",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0016,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 14.306017782394106,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-14",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-15",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.012347202748060226,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-14",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0028,
+      "discount_amount": 0,
+      "end_date": "2026-11-15",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0028,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.05883604567497969,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-14",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-16",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-15",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8403,
+      "end_date": "2026-11-16",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8403,
+      "start_date": "2026-11-15"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-16",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.05935401562601328,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-15",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0019,
+      "discount_amount": 0,
+      "end_date": "2026-11-16",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0019,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 17.647261064538238,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-15",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-16",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.012334171682596207,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-15",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.003,
+      "discount_amount": 0,
+      "end_date": "2026-11-16",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.003,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.059237404726445675,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-15",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-17",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-16",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8407,
+      "end_date": "2026-11-17",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8407,
+      "start_date": "2026-11-16"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-17",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.05941598583012819,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-16",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0023,
+      "discount_amount": 0,
+      "end_date": "2026-11-17",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0023,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 21.009563107266928,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-16",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-17",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.012345604598522186,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-16",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.003,
+      "discount_amount": 0,
+      "end_date": "2026-11-17",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.003,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.05929349269717932,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-16",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-18",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-17",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.841,
+      "end_date": "2026-11-18",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.841,
+      "start_date": "2026-11-17"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-18",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.059469047002494335,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-17",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0026,
+      "discount_amount": 0,
+      "end_date": "2026-11-18",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0026,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 23.729170595668627,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-17",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-18",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.012366221286356449,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-17",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.003,
+      "discount_amount": 0,
+      "end_date": "2026-11-18",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.003,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.05934611055999994,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-17",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-19",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-18",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.841,
+      "end_date": "2026-11-19",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.841,
+      "start_date": "2026-11-18"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-19",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.059353455901145935,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-18",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0026,
+      "discount_amount": 0,
+      "end_date": "2026-11-19",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0026,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 23.96685960182401,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-18",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-19",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.012430244125425816,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-18",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.003,
+      "discount_amount": 0,
+      "end_date": "2026-11-19",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.003,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.059293150901794434,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-18",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-20",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-19",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.841,
+      "end_date": "2026-11-20",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.841,
+      "start_date": "2026-11-19"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-20",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.059521022252738476,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-19",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0026,
+      "discount_amount": 0,
+      "end_date": "2026-11-20",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0026,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 24.13176852597311,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-19",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-20",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.012417322024703026,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-19",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.003,
+      "discount_amount": 0,
+      "end_date": "2026-11-20",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.003,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.05940834991633892,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-19",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-21",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-20",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8411,
+      "end_date": "2026-11-21",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8411,
+      "start_date": "2026-11-20"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-21",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.05918959900736809,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-20",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0027,
+      "discount_amount": 0,
+      "end_date": "2026-11-21",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0027,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 24.198119827944854,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-20",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-21",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.01247975043952465,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-20",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.003,
+      "discount_amount": 0,
+      "end_date": "2026-11-21",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.003,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.059123202227056026,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-20",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-22",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-21",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8411,
+      "end_date": "2026-11-22",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8411,
+      "start_date": "2026-11-21"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-22",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.059528728015720844,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-21",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0027,
+      "discount_amount": 0,
+      "end_date": "2026-11-22",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0027,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 24.233201417541267,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-21",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-22",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.012361709028482437,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-21",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.003,
+      "discount_amount": 0,
+      "end_date": "2026-11-22",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.003,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.059405747801065445,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-21",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.8333,
+      "discount_amount": 0,
+      "end_date": "2026-11-23",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.8333,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 24,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-22",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.8411,
+      "end_date": "2026-11-23",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.8411,
+      "start_date": "2026-11-22"
+    },
+    {
+      "amount": 0.0015,
+      "discount_amount": 0,
+      "end_date": "2026-11-23",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.0015,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.05934740509837866,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-22",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0027,
+      "discount_amount": 0,
+      "end_date": "2026-11-23",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0027,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 24.25933910294593,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-22",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0006,
+      "discount_amount": 0,
+      "end_date": "2026-11-23",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0006,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.012334233149886131,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-22",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.003,
+      "discount_amount": 0,
+      "end_date": "2026-11-23",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.003,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.059225549921393394,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-22",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.5556,
+      "discount_amount": 0,
+      "end_date": "2026-11-24",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_NUM_TASKS",
+      "network_access_type": "PUBLIC",
+      "original_amount": 0.5556,
+      "price": 0.03472222,
+      "product": "CONNECT",
+      "quantity": 16,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-23",
+      "unit": "Task-hour"
+    },
+    {
+      "amount": -0.5608,
+      "end_date": "2026-11-24",
+      "granularity": "DAILY",
+      "line_type": "PROMO_CREDIT",
+      "original_amount": -0.5608,
+      "start_date": "2026-11-23"
+    },
+    {
+      "amount": 0.001,
+      "discount_amount": 0,
+      "end_date": "2026-11-24",
+      "granularity": "DAILY",
+      "line_type": "CONNECT_THROUGHPUT",
+      "original_amount": 0.001,
+      "price": 0.025,
+      "product": "CONNECT",
+      "quantity": 0.039626034907996655,
+      "resource": {
+        "display_name": "sample_data",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lcc-yokxw9p"
+      },
+      "start_date": "2026-11-23",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.0018,
+      "discount_amount": 0,
+      "end_date": "2026-11-24",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_STORAGE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0018,
+      "price": 0.00010959,
+      "product": "KAFKA",
+      "quantity": 16.150736095340132,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-23",
+      "unit": "GB-hour"
+    },
+    {
+      "amount": 0.0004,
+      "discount_amount": 0,
+      "end_date": "2026-11-24",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_READ",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.0004,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.008231263607740402,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-23",
+      "unit": "GB"
+    },
+    {
+      "amount": 0.002,
+      "discount_amount": 0,
+      "end_date": "2026-11-24",
+      "granularity": "DAILY",
+      "line_type": "KAFKA_NETWORK_WRITE",
+      "network_access_type": "INTERNET",
+      "original_amount": 0.002,
+      "price": 0.05,
+      "product": "KAFKA",
+      "quantity": 0.03954677004367113,
+      "resource": {
+        "display_name": "cluster_0",
+        "environment": {
+          "id": "env-rgk1k0"
+        },
+        "id": "lkc-125nwo6"
+      },
+      "start_date": "2026-11-23",
+      "unit": "GB"
+    }
+  ],
+  "fetched_at": "2026-11-23T18:26:47.849651+00:00"
+}

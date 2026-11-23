@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "List all the environment"
+  },
+  {
+    "role": "assistant",
+    "content": "Unexpected error during FinOps analysis: ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)"
+  }
+]

@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "List all available tags in my Confluent Cloud environment."
+  },
+  {
+    "role": "assistant",
+    "content": "The MCP tool call `list-tags` was executed for environment `env-rgk1k0`, but the results of this call are not provided in the supplied data. Therefore, I cannot list the available tags."
+  }
+]
