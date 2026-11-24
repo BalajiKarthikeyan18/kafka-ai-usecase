@@ -23,6 +23,7 @@ from dotenv import load_dotenv
 from dotenv import load_dotenv
 
 from finops_agents import AgentError, run_inventory_agents
+from team_cost_allocation import build_team_cost_report
 
 # load_dotenv(APP_ENV, override=False)
 # load_dotenv(PARENT_ENV, override=False)
@@ -72,6 +73,77 @@ def as_float(value: Any) -> float:
         return float(value) if value not in (None, "") else 0.0
     except (TypeError, ValueError):
         return 0.0
+
+
+def render_team_cost_report(report: dict[str, Any]) -> None:
+    st.subheader("Team Cost Allocation")
+
+    st.caption(
+        "Direct costs are actual billing amounts matched by exact resource ID. "
+        "Shared and unallocated costs are shown separately."
+    )
+
+    st.markdown("**Discovered team tags**")
+    st.write(report["team_tags_discovered"])
+
+    st.markdown("**Team-wise direct actual costs**")
+
+    team_rows = [
+        {
+            "Team": item["team"],
+            "Direct actual cost": item["direct_actual_cost"],
+            "Matched billing resources": item["matched_billing_resources"],
+        }
+        for item in report["teams"]
+    ]
+
+    if team_rows:
+        st.dataframe(
+            pd.DataFrame(team_rows),
+            use_container_width=True,
+            hide_index=True,
+        )
+    else:
+        st.info("No team tags were discovered.")
+
+    st.markdown("**Resource ownership**")
+
+    ownership_rows = [
+        {
+            "Resource type": item["resource_type"],
+            "Resource name": item["resource_name"],
+            "Resource ID": item["resource_id"],
+            "Tags": ", ".join(item["tags"]),
+            "Owner": item["owner"] or "Unassigned",
+            "Status": item["ownership_status"],
+        }
+        for item in report["inventory"]
+    ]
+
+    if ownership_rows:
+        st.dataframe(
+            pd.DataFrame(ownership_rows),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+    with st.expander(
+        f"Shared infrastructure ({len(report['shared_billing_rows'])})"
+    ):
+        st.json(report["shared_billing_rows"])
+
+    with st.expander(
+        f"Unallocated billing ({len(report['unallocated_billing_rows'])})"
+    ):
+        st.json(report["unallocated_billing_rows"])
+
+    with st.expander(
+        f"Promotional credits ({len(report['promotional_credit_rows'])})"
+    ):
+        st.json(report["promotional_credit_rows"])
+
+    st.info(report["allocation_status"])
+
 
 
 def fetch_billing(start_date: date, end_exclusive: date) -> list[dict[str, Any]]:
@@ -462,7 +534,16 @@ def main() -> None:
                     timeout_seconds=MCP_TIMEOUT,
                 )
             summary = calculate_summary(billing_rows, agent_result)
+
+            team_report = build_team_cost_report(
+                billing_rows=billing_rows,
+                agent_result=agent_result,
+            )
+
             render_overview(summary)
+            render_team_cost_report(team_report)
+
+            summary["team_cost_report"] = team_report
             with st.expander("Agent execution trace", expanded=False):
                 st.write(f"Discovered {agent_result['tool_count']} MCP tools.")
                 st.markdown("**Selected tool plan**")
