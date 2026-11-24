@@ -86,19 +86,90 @@ def _tool_catalog(tools: list[Any]) -> list[dict[str, Any]]:
     return catalog
 
 
+
 def _extract_json(text: str) -> dict[str, Any]:
+    """Safely extract and validate a JSON planner response."""
+
     raw = (text or "").strip()
-    raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.I)
+
+    if not raw:
+        raise AgentError("Gemini returned an empty tool-planning response.")
+
+    # Remove Markdown code fences if present.
+    raw = re.sub(
+        r"^```(?:json)?\s*|\s*```$",
+        "",
+        raw,
+        flags=re.IGNORECASE,
+    ).strip()
+
+    # First attempt: parse the complete response.
     try:
         value = json.loads(raw)
     except json.JSONDecodeError:
-        match = re.search(r"\{[\s\S]*\}", raw)
-        if not match:
-            raise AgentError("The MCP tool planner did not return valid JSON.")
-        value = json.loads(match.group(0))
+        # Fallback: extract the first complete JSON object.
+        start = raw.find("{")
+
+        if start == -1:
+            raise AgentError(
+                "Gemini did not return a valid JSON tool plan."
+            )
+
+        depth = 0
+        in_string = False
+        escaped = False
+        end = -1
+
+        for index in range(start, len(raw)):
+            char = raw[index]
+
+            if in_string:
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == '"':
+                    in_string = False
+                continue
+
+            if char == '"':
+                in_string = True
+            elif char == "{":
+                depth += 1
+            elif char == "}":
+                depth -= 1
+
+                if depth == 0:
+                    end = index + 1
+                    break
+
+        if end == -1:
+            raise AgentError(
+                "Gemini returned incomplete JSON. "
+                "The tool plan may have been truncated."
+            )
+
+        try:
+            value = json.loads(raw[start:end])
+        except json.JSONDecodeError as exc:
+            raise AgentError(
+                f"Gemini returned malformed JSON: {exc}"
+            ) from exc
+
     if not isinstance(value, dict):
-        raise AgentError("The MCP tool planner returned an unexpected response.")
+        raise AgentError(
+            "Gemini returned an unexpected planner response."
+        )
+
+    calls = value.get("calls")
+
+    if not isinstance(calls, list):
+        raise AgentError(
+            "Gemini planner response must contain a calls array."
+        )
+
     return value
+
 
 
 def _validate_schema(schema: dict[str, Any], args: dict[str, Any], tool_name: str) -> None:
@@ -197,7 +268,8 @@ AVAILABLE READ-ONLY MCP TOOLS:
         contents=prompt,
         config={
             "temperature": 0,
-            "max_output_tokens": 2200,
+            "max_output_tokens": 4096,
+            "response_mime_type": "application/json",
         },
     )
     text = getattr(response, "text", "") or ""
@@ -318,12 +390,26 @@ async def _run_agent_session(question: str, start_date: str, end_date: str,
             # cluster, compute pool) and then call child-resource tools using
             # those exact IDs. A single static plan cannot safely do that.
             for _round in range(3):
-                round_plan = await asyncio.to_thread(
-                    _make_plan, question, start_date, end_date, catalog,
-                    api_key, model_name, results, all_plan
-                )
-                if not round_plan:
+                try:
+                    round_plan = await asyncio.to_thread(
+                        _make_plan,
+                        question,
+                        start_date,
+                        end_date,
+                        catalog,
+                        api_key,
+                        model_name,
+                        results,
+                        all_plan,
+                    )
+                except AgentError as exc:
+                    errors.append({
+                        "tool": "gemini-planner",
+                        "error": str(exc),
+                    })
                     break
+                    if not round_plan:
+                        break
 
                 names = [str(call.get("tool", "")) for call in round_plan if isinstance(call, dict)]
                 if "query-metrics" in names and "list-available-metrics" in tool_map and "list-available-metrics" not in names and not any(p.get("tool") == "list-available-metrics" for p in all_plan):

@@ -46,12 +46,12 @@ GOOGLE_API_KEY = (
     or os.getenv("GEMINI_API_KEY")
     or ""
 ).strip()
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash").strip()
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip()
 CONFLUENT_API_KEY = os.getenv("CONFLUENT_CLOUD_API_KEY", "").strip()
 CONFLUENT_API_SECRET = os.getenv("CONFLUENT_CLOUD_API_SECRET", "").strip()
 BILLING_API_URL = os.getenv("CONFLUENT_BILLING_URL", "https://api.confluent.cloud/billing/v1/costs").strip()
 HTTP_TIMEOUT = int(os.getenv("HTTP_TIMEOUT_SECONDS", "30"))
-MCP_TIMEOUT = int(os.getenv("MCP_TIMEOUT_SECONDS", "300"))
+MCP_TIMEOUT = int(os.getenv("MCP_TIMEOUT_SECONDS", "800"))
 MAX_DAYS_PER_REQUEST = 31
 MAX_CONTEXT_ROWS = 250
 
