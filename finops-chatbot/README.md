@@ -170,7 +170,7 @@ topic inherits the full cost of its Kafka cluster.
 The expected project layout is:
 
 ``` text
-D:\JLR\AI USECASE\
+D:\AI USECASE\
 |
 +-- .env
 +-- config.yaml
@@ -236,7 +236,7 @@ SCHEMA_REGISTRY_API_KEY=your_schema_registry_api_key
 SCHEMA_REGISTRY_API_SECRET=your_schema_registry_api_secret
 
 # Optional runtime settings
-# CONFLUENT_MCP_CONFIG=D:\JLR\AI USECASE\config.yaml
+# CONFLUENT_MCP_CONFIG=D:\AI USECASE\config.yaml
 # HTTP_TIMEOUT_SECONDS=30
 # MCP_TIMEOUT_SECONDS=800
 ```
@@ -255,7 +255,7 @@ The application expects the existing Confluent MCP configuration file
 at:
 
 ``` text
-D:\JLR\AI USECASE\config.yaml
+D:\AI USECASE\config.yaml
 ```
 
 By default, `chatbot.py` resolves `config.yaml` from the parent
@@ -272,20 +272,20 @@ secrets into prompts or commit them to Git.
 Open PowerShell and move to the project directory:
 
 ``` powershell
-cd "D:\JLR\AI USECASE\finops-chatbot"
+cd "D:\AI USECASE\finops-chatbot"
 ```
 
 Activate the existing virtual environment if you already have one:
 
 ``` powershell
-& "D:\JLR\AI USECASE\.venv\Scripts\Activate.ps1"
+& "D:\AI USECASE\.venv\Scripts\Activate.ps1"
 ```
 
 If you need to create it:
 
 ``` powershell
-py -3.12 -m venv "D:\JLR\AI USECASE\.venv"
-& "D:\JLR\AI USECASE\.venv\Scripts\Activate.ps1"
+py -3.12 -m venv "D:\AI USECASE\.venv"
+& "D:\AI USECASE\.venv\Scripts\Activate.ps1"
 ```
 
 Install dependencies:
