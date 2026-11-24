@@ -20,7 +20,6 @@ import pandas as pd
 import requests
 import streamlit as st
 from dotenv import load_dotenv
-from dotenv import load_dotenv
 
 from finops_agents import AgentError, run_inventory_agents
 from team_cost_allocation import build_team_cost_report
@@ -77,26 +76,85 @@ def as_float(value: Any) -> float:
 
 def render_team_cost_report(report: dict[str, Any]) -> None:
     st.subheader("Team Cost Allocation")
-
     st.caption(
         "Direct costs are actual billing amounts matched by exact resource ID. "
-        "Shared and unallocated costs are shown separately."
+        "Tag ownership comes from MCP and Stream Catalog metadata. Shared and "
+        "unallocated charges are not automatically distributed."
     )
 
-    st.markdown("**Discovered team tags**")
-    st.write(report["team_tags_discovered"])
+    catalog = report.get("catalog_discovery", {})
+    if not catalog.get("available"):
+        st.warning(
+            "Stream Catalog discovery is unavailable. "
+            + "; ".join(catalog.get("errors", []))
+        )
+
+    st.markdown("**Tag definitions discovered**")
+    st.write(report.get("tag_definitions_discovered", []))
+    st.markdown("**Team tags discovered**")
+    st.write(report.get("team_tags_discovered", []))
+    st.markdown("**Shared/platform tags discovered**")
+    st.write(report.get("shared_tags_discovered", []))
+
+    # Show real entity assignments returned by Stream Catalog.
+    catalog_entities = catalog.get("entities", [])
+    st.markdown("**Stream Catalog tag assignments**")
+    if catalog_entities:
+        st.dataframe(
+            pd.DataFrame([
+                {
+                    "Resource type": item.get("resource_type"),
+                    "Catalog entity type": item.get("catalog_entity_type"),
+                    "Resource name": item.get("resource_name"),
+                    "Resource ID": item.get("resource_id"),
+                    "Qualified name": item.get("qualified_name"),
+                    "Tags": ", ".join(item.get("tags", [])),
+                    "GUID": item.get("guid"),
+                    "Status": item.get("status"),
+                }
+                for item in catalog_entities
+            ]),
+            use_container_width=True,
+            hide_index=True,
+        )
+    else:
+        st.info(
+            "Stream Catalog returned no entities for the searched tags. "
+            "Review the coverage details below before concluding that resources "
+            "are untagged."
+        )
+
+    checks = catalog.get("checks", [])
+    if checks:
+        with st.expander("Stream Catalog search coverage", expanded=False):
+            st.dataframe(
+                pd.DataFrame([
+                    {
+                        "Tag": item.get("tag"),
+                        "Entity type": item.get("entity_type"),
+                        "Status": item.get("status"),
+                        "HTTP status": item.get("http_status"),
+                        "Results": item.get("result_count", 0),
+                    }
+                    for item in checks
+                ]),
+                use_container_width=True,
+                hide_index=True,
+            )
+    if catalog.get("errors"):
+        with st.expander("Stream Catalog errors", expanded=False):
+            st.write(catalog["errors"])
 
     st.markdown("**Team-wise direct actual costs**")
-
     team_rows = [
         {
             "Team": item["team"],
             "Direct actual cost": item["direct_actual_cost"],
             "Matched billing resources": item["matched_billing_resources"],
+            "Assigned inventory resources": len(item.get("assigned_inventory_resources", [])),
         }
-        for item in report["teams"]
+        for item in report.get("teams", [])
     ]
-
     if team_rows:
         st.dataframe(
             pd.DataFrame(team_rows),
@@ -104,45 +162,54 @@ def render_team_cost_report(report: dict[str, Any]) -> None:
             hide_index=True,
         )
     else:
-        st.info("No team tags were discovered.")
+        st.info("No team ownership tags were discovered in the available metadata.")
 
-    st.markdown("**Resource ownership**")
-
+    st.markdown("**Merged resource ownership**")
     ownership_rows = [
         {
-            "Resource type": item["resource_type"],
-            "Resource name": item["resource_name"],
-            "Resource ID": item["resource_id"],
-            "Tags": ", ".join(item["tags"]),
-            "Owner": item["owner"] or "Unassigned",
-            "Status": item["ownership_status"],
+            "Resource type": item.get("resource_type"),
+            "Resource name": item.get("resource_name"),
+            "Resource ID": item.get("resource_id"),
+            "Tags": ", ".join(item.get("tags", [])),
+            "Owner": item.get("owner") or "Unassigned",
+            "Ownership status": item.get("ownership_status"),
+            "Metadata source": ", ".join(item.get("sources", [])),
+            "Qualified name": item.get("qualified_name"),
+            "Billing match": item.get("billing_match_status"),
+            "Direct actual cost": item.get("billing_actual_cost"),
         }
-        for item in report["inventory"]
+        for item in report.get("inventory", [])
     ]
-
     if ownership_rows:
         st.dataframe(
             pd.DataFrame(ownership_rows),
             use_container_width=True,
             hide_index=True,
         )
+    else:
+        st.info("No resource inventory records were returned.")
 
     with st.expander(
-        f"Shared infrastructure ({len(report['shared_billing_rows'])})"
+        f"Shared infrastructure billing ({len(report.get('shared_billing_rows', []))})"
     ):
-        st.json(report["shared_billing_rows"])
+        st.json(report.get("shared_billing_rows", []))
 
     with st.expander(
-        f"Unallocated billing ({len(report['unallocated_billing_rows'])})"
+        f"Unallocated billing ({len(report.get('unallocated_billing_rows', []))})"
     ):
-        st.json(report["unallocated_billing_rows"])
+        st.json(report.get("unallocated_billing_rows", []))
 
     with st.expander(
-        f"Promotional credits ({len(report['promotional_credit_rows'])})"
+        f"Unmatched billing ({len(report.get('unmatched_billing_rows', []))})"
     ):
-        st.json(report["promotional_credit_rows"])
+        st.json(report.get("unmatched_billing_rows", []))
 
-    st.info(report["allocation_status"])
+    with st.expander(
+        f"Promotional credits ({len(report.get('promotional_credit_rows', []))})"
+    ):
+        st.json(report.get("promotional_credit_rows", []))
+
+    st.info(report.get("allocation_status", "No allocation status was returned."))
 
 
 
@@ -362,6 +429,25 @@ def _summary_context(summary: dict[str, Any]) -> str:
             f"raw_metadata={json.dumps(row.get('raw', {}), ensure_ascii=False, default=str)[:3000]}"
         )
 
+    team_report = summary.get("team_cost_report")
+    if team_report:
+        lines.append("TEAM OWNERSHIP REPORT (Python-generated; use these exact results):")
+        report_payload = {
+            "tag_definitions_discovered": team_report.get("tag_definitions_discovered", []),
+            "team_tags_discovered": team_report.get("team_tags_discovered", []),
+            "shared_tags_discovered": team_report.get("shared_tags_discovered", []),
+            "inventory": team_report.get("inventory", []),
+            "catalog_discovery": team_report.get("catalog_discovery", {}),
+            "teams": team_report.get("teams", []),
+            "shared_billing_rows": team_report.get("shared_billing_rows", []),
+            "unmatched_billing_rows": team_report.get("unmatched_billing_rows", []),
+            "unallocated_billing_rows": team_report.get("unallocated_billing_rows", []),
+            "allocation_status": team_report.get("allocation_status"),
+            "limitations": team_report.get("limitations", []),
+        }
+        report_text = json.dumps(report_payload, ensure_ascii=False, default=str)
+        lines.append(report_text[:50000])
+
     agent = summary.get("agent_result", {})
 
     lines.append(f"MCP tools discovered: {agent.get('tool_count', 0)}")
@@ -400,8 +486,9 @@ def _summary_context(summary: dict[str, Any]) -> str:
 
 
 SYSTEM_PROMPT = """You are a Confluent Cloud FinOps Analyst Agent.
-Answer only from the supplied billing and MCP results. Billing REST API line items are the financial source of truth. MCP results describe inventory and metadata only; never treat inventory as a charge. Python-calculated totals are authoritative and must not be recomputed or changed by you.
-Never invent resource IDs, names, costs, quantities, dates, credits, or savings. Match billing and inventory only by exact resource IDs; never match by display name. Keep promo credits negative and unallocated. Keep billing-only or unmatched IDs visible. If inventory tool calls fail or a category is not exposed/enabled, state that coverage gap instead of claiming the resource type does not exist. Distinguish measured costs from suggestions or estimates. Give concise tables when useful. Never reveal credentials or environment variables."""
+Answer only from the supplied billing, MCP, and Stream Catalog results. Billing REST API line items are the financial source of truth. MCP and Stream Catalog results describe inventory and metadata only; never treat inventory as a charge. Python-calculated totals are authoritative and must not be recomputed or changed by you.
+For tag ownership questions, use the Python-generated TEAM OWNERSHIP REPORT and its catalog_discovery.entities as the authoritative tag-assignment evidence. Do not ignore Stream Catalog results and do not claim that no resources have a tag when matching entities are present there. Distinguish a tag definition from an entity assignment. A zero-result query for one entity type is not proof that the tag is absent from all resource types. Unsupported/invalid entity-type queries are coverage gaps, not zero-result evidence.
+Never invent resource IDs, names, costs, quantities, dates, credits, or savings. Match billing and inventory only by exact resource IDs; never match by display name. Keep promo credits negative and separate. Keep billing-only or unmatched IDs visible. If inventory tool calls fail or a category is not exposed/enabled, state that coverage gap instead of claiming the resource type does not exist. Distinguish measured costs from suggestions or estimates. Do not assign a Kafka cluster's full charge to its topics. Give concise tables when useful. Never reveal credentials or environment variables."""
 
 
 def generate_answer(question: str, context: str) -> str:
@@ -540,10 +627,11 @@ def main() -> None:
                 agent_result=agent_result,
             )
 
+            summary["team_cost_report"] = team_report
+
             render_overview(summary)
             render_team_cost_report(team_report)
 
-            summary["team_cost_report"] = team_report
             with st.expander("Agent execution trace", expanded=False):
                 st.write(f"Discovered {agent_result['tool_count']} MCP tools.")
                 st.markdown("**Selected tool plan**")

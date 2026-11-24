@@ -245,6 +245,7 @@ The tool descriptions are the authoritative explanation of what each tool does. 
 Only select tools from the supplied catalogue. These tools are marked read-only. Never select a tool that creates, updates, deletes, restarts, or otherwise changes resources.
 Billing data is retrieved separately from the Confluent Billing REST API; do not select a billing tool.
 For a broad account/resource cost overview, select relevant read-only inventory list tools for environments, Kafka clusters, topics, connectors, Flink compute pools, schemas/Schema Registry, ksqlDB, cluster links, tags, and other available resource types. Select only categories actually represented by the catalogue.
+For any question about tags, ownership, teams, or resources tagged with a label, always call list-tags (if exposed) to discover all tag definitions, in addition to the relevant resource/tag-search tools. Do not assume a tag definition proves an entity assignment.
 If the question asks about metrics, follow tool-description prerequisites; in particular, discover available metrics before querying a metric.
 Use exact argument names and casing from inputSchema. Supply all required arguments. Do not guess IDs; first select a discovery tool when IDs are unknown. If an argument cannot be determined and no discovery tool can provide it, omit that call.
 You are operating in a multi-step workflow. Previous tool results may contain IDs needed by later tools. Use those exact returned IDs when constructing dependent calls. Do not repeat an identical tool+arguments call already executed. If a prerequisite listing returned IDs, use them to call child-resource listing tools. If there are no useful additional calls, return an empty calls array.
@@ -412,6 +413,23 @@ async def _run_agent_session(question: str, start_date: str, end_date: str,
                         break
 
                 names = [str(call.get("tool", "")) for call in round_plan if isinstance(call, dict)]
+
+                # Deterministically fetch the tag catalogue for ownership questions.
+                # This prevents Gemini's planner from omitting list-tags and leaving
+                # the separate Stream Catalog search with no tag names to query.
+                ownership_question = bool(re.search(
+                    r"\b(tag|tags|tagged|ownership|owner|team|teams)\b",
+                    question,
+                    flags=re.IGNORECASE,
+                ))
+                if ownership_question and "list-tags" in tool_map and "list-tags" not in names:
+                    round_plan.insert(0, {
+                        "tool": "list-tags",
+                        "arguments": {},
+                        "purpose": "Discover all tag definitions before searching Stream Catalog entity assignments.",
+                    })
+                    names.insert(0, "list-tags")
+
                 if "query-metrics" in names and "list-available-metrics" in tool_map and "list-available-metrics" not in names and not any(p.get("tool") == "list-available-metrics" for p in all_plan):
                     round_plan.insert(0, {"tool": "list-available-metrics", "arguments": {},
                                           "purpose": "Required prerequisite: discover valid metric names and filters."})
